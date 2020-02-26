@@ -1,8 +1,8 @@
 ﻿using Unity.Entities;
+using Unity.Mathematics;
 
 // Used for Farmer pathing
 public struct PathData : IBufferElementData
 {
-    int PositionX;
-    int PositionY;
+    public int2 Position;
 }
