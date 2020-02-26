@@ -36,6 +36,28 @@ public class FarmGeneratorSystem : JobComponentSystem
             }
         }
 
+        // Create store
+        int spawnedStores = 0;
+
+        bool[,] storeTiles = new bool[farm.MapSize.x, farm.MapSize.y];
+
+        while (spawnedStores < farm.StoreCount)
+        {
+            int x = UnityEngine.Random.Range(0, farm.MapSize.x);
+            int y = UnityEngine.Random.Range(0, farm.MapSize.y);
+            if (storeTiles[x, y] == false)
+            {
+                storeTiles[x, y] = true;
+                Entity storeEntity = EntityManager.Instantiate(farm.StoreEntity);
+                EntityManager.SetComponentData(storeEntity, new Translation()
+                {
+                    Value = new float3(x, 0, y)
+                });
+                spawnedStores++;
+            }
+        }
+
+
         farmDatas.Dispose();
         EntityManager.RemoveComponent<FarmNeedGenerationTag>(m_QueryForFarmNeedingGeneration);
         return default;
