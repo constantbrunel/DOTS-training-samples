@@ -3,7 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Entities;
 
-public struct Rock : IComponentData
+public class Rock : MonoBehaviour, IConvertGameObjectToEntity
 {
-    public float Heatlh;
+    public int Health;
+
+    public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
+    {
+        dstManager.AddComponentData(entity, new HealthData()
+        { 
+            Value = Health
+        });
+    }
 }

@@ -244,7 +244,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _SceneAsset: {fileID: 102900000, guid: 9cbb6b76372574293aed5c64bf00d366, type: 3}
   _HierarchyColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  AutoLoadScene: 0
+  AutoLoadScene: 1
   _SceneGUID:
     Value:
       x: 1740028873

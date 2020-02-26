@@ -146,7 +146,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 47109336}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.8716922, y: -3.475016, z: 2.1571074}
+  m_LocalPosition: {x: 6, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -164,9 +164,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 796c7ed783c4848099327c5aa129be8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MapSize: {x: 250, y: 250}
+  MapSize: {x: 60, y: 60}
   StoreCount: 10
   RockSpawnAttempts: 50
+  InitialFarmerCount: 2
   TileGameObject: {fileID: 1692649318389262669, guid: 431eacc767b73493cb284cf8c203c4ed,
     type: 3}
   StoreGameObject: {fileID: 1013783550365935148, guid: ce862d438ae104b7888bed54740a1eb6,
