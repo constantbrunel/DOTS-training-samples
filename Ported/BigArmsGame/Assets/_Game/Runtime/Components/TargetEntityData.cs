@@ -2,5 +2,5 @@
 
 public struct TargetEntityData : IComponentData
 {
-    Entity Value;
+    public Entity Value;
 }
