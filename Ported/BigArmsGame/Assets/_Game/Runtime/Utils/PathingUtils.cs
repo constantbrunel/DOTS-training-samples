@@ -5,8 +5,8 @@ using UnityEngine;
 public static class Pathing
 {
 
-	public delegate bool IsNavigableDelegate(NativeList<TileDescriptor> array, int x, int y);
-	public delegate bool CheckMatchDelegate(NativeList<TileDescriptor> array, int x, int y);
+	public delegate bool IsNavigableDelegate(NativeList<TileDescriptor> array, int mapSizeX, int x, int y);
+	public delegate bool CheckMatchDelegate(NativeList<TileDescriptor> array, int mapSizeX, int x, int y);
 
 	static readonly int[] dirsX = new int[] { 1, -1, 0, 0 };
 	static readonly int[] dirsY = new int[] { 0, 0, 1, -1 };
@@ -23,26 +23,26 @@ public static class Pathing
 		x = hash % mapSizeY;
 	}
 
-	public static bool IsNavigableDefault(NativeList<TileDescriptor> array, int x, int y)
+	public static bool IsNavigableDefault(NativeList<TileDescriptor> array, int mapSizeX, int x, int y)
 	{
-		return array[Hash(array.Length, x ,y)].Type != TileTypes.Rock;
+		return array[Hash(mapSizeX, x ,y)].TileType != TileTypes.Rock;
 	}
 
-	public static bool IsRock(NativeList<TileDescriptor> array, int x, int y)
+	public static bool IsRock(NativeList<TileDescriptor> array, int mapSizeX, int x, int y)
 	{
-		return array[Hash(array.Length, x, y)].Type == TileTypes.Rock;
+		return array[Hash(mapSizeX, x, y)].TileType == TileTypes.Rock;
 	}
-	public static bool IsStore(NativeList<TileDescriptor> array, int x, int y)
+	public static bool IsStore(NativeList<TileDescriptor> array, int mapSizeX, int x, int y)
 	{
-		return array[Hash(array.Length, x, y)].Type == TileTypes.Store;
+		return array[Hash(mapSizeX, x, y)].TileType == TileTypes.Store;
 	}
-	public static bool IsTillable(NativeList<TileDescriptor> array, int x, int y)
+	public static bool IsTillable(NativeList<TileDescriptor> array, int mapSizeX, int x, int y)
 	{
-		return array[Hash(array.Length, x, y)].Type == TileTypes.None;
+		return array[Hash(mapSizeX, x, y)].TileType == TileTypes.None;
 	}
-	public static bool IsReadyForPlant(NativeList<TileDescriptor> array, int x, int y)
+	public static bool IsReadyForPlant(NativeList<TileDescriptor> array, int mapSizeX, int x, int y)
 	{
-		return array[Hash(array.Length, x, y)].Type == TileTypes.Tilled;
+		return array[Hash(mapSizeX, x, y)].TileType == TileTypes.Tilled;
 	}
 
 	public static Entity FindNearbyRock(NativeList<TileDescriptor> array, int mapSizeX, int mapSizeY, int x, int y, int range, ref NativeList<int> outputPath)
@@ -170,7 +170,7 @@ public static class Pathing
 					{
 
 						int hash = Hash(mapSizeX, x2, y2);
-						if (IsNavigable(array, x2, y2))
+						if (IsNavigable(array, mapSizeX, x2, y2))
 						{
 							visitedTiles[Hash(mapSizeX, x2, y2)] = steps;
 							nextTiles.Add(hash);
@@ -179,7 +179,7 @@ public static class Pathing
 						{
 							if (y2 >= requiredZone.yMin && y2 <= requiredZone.yMax)
 							{
-								if (CheckMatch(array, x2, y2))
+								if (CheckMatch(array, mapSizeX, x2, y2))
 								{
 									outputTiles.Add(hash);
 									if (maxResultCount != 0 && outputTiles.Length >= maxResultCount)
