@@ -1,18 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using Unity.Entities;
 
-public class PlantTags : MonoBehaviour
-{
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-}
+public struct IsGrowingTag : IComponentData{}
+
+public struct IsHarvestableTag : IComponentData{}
+
+public struct IsReservedTag : IComponentData{}
+
+public struct IsSoldTag : IComponentData {}
