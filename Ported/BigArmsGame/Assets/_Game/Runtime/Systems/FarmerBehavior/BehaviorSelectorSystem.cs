@@ -1,6 +1,5 @@
 ﻿using Unity.Entities;
 using Unity.Jobs;
-using UnityEngine;
 
 [UpdateInGroup(typeof(SimulationSystemGroup))]
 public class BehaviorSelectorSystem : JobComponentSystem
@@ -18,6 +17,8 @@ public class BehaviorSelectorSystem : JobComponentSystem
     {
         var ecb = m_EndSimulationSystemGroupCommandBuffer.CreateCommandBuffer().ToConcurrent();
 
+        var random = new Unity.Mathematics.Random((uint)Time.ElapsedTime);
+
         var jobHandle = Entities
             .WithAll<FarmerTag>()
             .ForEach((Entity entity, int entityInQueryIndex, ref FarmerBehaviorData behavior, ref DynamicBuffer<PathData> pathBuffer) =>
@@ -28,7 +29,7 @@ public class BehaviorSelectorSystem : JobComponentSystem
                     pathBuffer.Clear();
 
                     // Select a behavior
-                    int rand = Random.Range(0, 4);
+                    int rand = random.NextInt(0, 4);
                     if (rand == 0)
                     {
                         ecb.SetComponent(entityInQueryIndex, entity, new FarmerBehaviorData() { Value = FarmerBehavior.SmashRock });

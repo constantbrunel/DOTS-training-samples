@@ -6,4 +6,3 @@ public struct Damage : IComponentData
     public Entity Source;
     public Entity Target;
 }
-
