@@ -2,6 +2,8 @@
 
 public struct MoneyData : IComponentData
 {
-    int FarmerBank;
-    int DroneBank;
+    public int FarmerBank;
+    public int DroneBank;
+    public int FarmerCost;
+    public int DroneCost;
 }
