@@ -3,5 +3,5 @@
 // Used to grow plants and destroy rocks
 public struct HealthData : IComponentData
 {
-    float Value;
+    public float Value;
 }
