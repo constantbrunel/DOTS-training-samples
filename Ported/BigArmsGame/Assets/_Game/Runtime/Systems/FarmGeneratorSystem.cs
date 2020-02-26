@@ -32,8 +32,8 @@ public class FarmGeneratorSystem : JobComponentSystem
 
         tiles = new NativeArray<TileDescriptor>(mapX * mapY, Allocator.Persistent);
 
-        // Create tiles
-        for (int x = 0; x < mapX; ++x)
+        // Create default ground
+        /*for (int x = 0; x < mapX; ++x)
         {
             for (int y = 0; y < mapY; ++y)
             {
@@ -48,7 +48,16 @@ public class FarmGeneratorSystem : JobComponentSystem
                     Entity = Entity.Null
                 };
             }
-        }
+        }*/
+        Entity tileEntity = EntityManager.Instantiate(farm.TileEntity);
+        EntityManager.SetComponentData(tileEntity, new Translation
+        {
+            Value = new float3(mapX/2 - 0.5f, 0, mapY/2 - 0.5f)
+        });
+        EntityManager.AddComponentData(tileEntity, new NonUniformScale()
+        {
+            Value = new float3(mapX * 0.1f, 1, mapY * 0.1f)
+        });
 
         // Create store
         int spawnedStores = 0;

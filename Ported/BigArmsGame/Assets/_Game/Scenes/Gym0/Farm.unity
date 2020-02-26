@@ -164,7 +164,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 796c7ed783c4848099327c5aa129be8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MapSize: {x: 60, y: 60}
+  MapSize: {x: 250, y: 250}
   StoreCount: 10
   RockSpawnAttempts: 50
   TileGameObject: {fileID: 1692649318389262669, guid: 431eacc767b73493cb284cf8c203c4ed,
