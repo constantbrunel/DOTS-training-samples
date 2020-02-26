@@ -36,6 +36,10 @@ public static class Pathing
 	{
 		return array[Hash(mapSizeX, x, y)].TileType == TileTypes.Store;
 	}
+	public static bool IsPlant(NativeArray<TileDescriptor> array, int mapSizeX, int x, int y)
+	{
+		return array[Hash(mapSizeX, x, y)].TileType == TileTypes.Planted;
+	}
 	public static bool IsTillable(NativeList<TileDescriptor> array, int mapSizeX, int x, int y)
 	{
 		return array[Hash(mapSizeX, x, y)].TileType == TileTypes.None;
@@ -43,6 +47,15 @@ public static class Pathing
 	public static bool IsReadyForPlant(NativeArray<TileDescriptor> array, int mapSizeX, int x, int y)
 	{
 		return array[Hash(mapSizeX, x, y)].TileType == TileTypes.Tilled;
+	}
+    public static bool IsBlocked(NativeArray<TileDescriptor> array, int mapSizeX, int mapSizeY, int x, int y)
+	{
+		if (x < 0 || y < 0 || x >= mapSizeX || y >= mapSizeY)
+		{
+			return true;
+		}
+
+		return IsRock(array, mapSizeX, x, y);
 	}
 
 	public static Entity FindNearbyRock(NativeArray<TileDescriptor> array, int mapSizeX, int mapSizeY, int x, int y, int range, ref NativeList<int> outputPath)
