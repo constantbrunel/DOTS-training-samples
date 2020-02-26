@@ -8,7 +8,7 @@ public class FarmGeneratorSystem : JobComponentSystem
 {
     private EntityQuery m_QueryForFarmNeedingGeneration;
 
-    public NativeArray<TileTypes> tiles;
+    public NativeArray<TileDescriptor> tiles;
 
     protected override void OnCreate()
     {
