@@ -12,7 +12,7 @@ public class RockDamageSystem : JobComponentSystem
 
         commandBufferSystem = World.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
 
-        query = GetEntityQuery(typeof(RockDamage));
+        query = GetEntityQuery(typeof(Damage));
 
         RequireForUpdate(query);
     }
@@ -21,18 +21,18 @@ public class RockDamageSystem : JobComponentSystem
     {
         var commandBuffer = commandBufferSystem.CreateCommandBuffer().ToConcurrent();
 
-        var rockDamages = query.ToComponentDataArray<RockDamage>(Unity.Collections.Allocator.TempJob);
-        var jobDeps = Entities.ForEach((Entity entity, int entityInQueryIndex, ref Rock rock) =>
+        var rockDamages = query.ToComponentDataArray<Damage>(Unity.Collections.Allocator.TempJob);
+        var jobDeps = Entities.ForEach((Entity entity, int entityInQueryIndex, ref HealthData healthData) =>
         {
             foreach(var rockDamage in rockDamages)
             {
                 if (rockDamage.Target == entity)
                 {
-                    rock.Heatlh -= rockDamage.Damage;
+                    healthData.Value -= rockDamage.Value;
                 }
             }
 
-            if(rock.Heatlh <= 0)
+            if(healthData.Value <= 0)
             {
                 commandBuffer.DestroyEntity(entityInQueryIndex, entity);
             }

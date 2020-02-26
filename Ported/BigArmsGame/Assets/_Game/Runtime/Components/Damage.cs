@@ -1,10 +1,8 @@
 ﻿using Unity.Entities;
-using UnityEngine;
 
-
-public struct RockDamage : IComponentData
+public struct Damage : IComponentData
 {
-    float Damage;
+    public float Value;
     public Entity Source;
     public Entity Target;
 }
