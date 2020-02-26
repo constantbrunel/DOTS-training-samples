@@ -33,22 +33,17 @@ public class FarmGeneratorSystem : JobComponentSystem
         tiles = new NativeArray<TileDescriptor>(mapX * mapY, Allocator.Persistent);
 
         // Create default ground
-        /*for (int x = 0; x < mapX; ++x)
+        for (int x = 0; x < mapX; ++x)
         {
             for (int y = 0; y < mapY; ++y)
             {
-                Entity tileEntity = EntityManager.Instantiate(farm.TileEntity);
-                EntityManager.SetComponentData(tileEntity, new Translation
-                {
-                    Value = new float3(x, 0, y)
-                });
                 tiles[mapX * y + x] = new TileDescriptor()
                 {
                     TileType = TileTypes.None,
                     Entity = Entity.Null
                 };
             }
-        }*/
+        }
         Entity tileEntity = EntityManager.Instantiate(farm.TileEntity);
         EntityManager.SetComponentData(tileEntity, new Translation
         {
@@ -115,7 +110,7 @@ public class FarmGeneratorSystem : JobComponentSystem
                 {
                     Value = new float3(scaleWidth, 1, scaleHeight)
                 });
-                EntityManager.AddComponentData(rockEntity, new Translation()
+                EntityManager.SetComponentData(rockEntity, new Translation()
                 {
                     Value = new float3((float)rockX - 0.5f + (float)scaleWidth / 2.0f, 0, (float)rockY - 0.5f + (float)scaleWidth / 2.0f)
                 });
@@ -132,6 +127,27 @@ public class FarmGeneratorSystem : JobComponentSystem
                     }
                 }
             }
+        }
+
+        int spawnedFarmer = 0;
+        while(spawnedFarmer <= farm.InitialFarmerCount)
+        {
+            int x = UnityEngine.Random.Range(0, mapX);
+            int y = UnityEngine.Random.Range(0, mapY);
+
+            // Avoid spawning into rocks
+            if(tiles[x + y * mapY].TileType == TileTypes.Rock)
+            {
+                continue;
+            }
+
+            Entity farmerEntity = EntityManager.Instantiate(farm.FarmerEntity);
+            EntityManager.SetComponentData(farmerEntity, new Translation()
+            {
+                Value = new float3(x, 0, y)
+            });
+
+            spawnedFarmer++;
         }
 
         EntityManager.RemoveComponent<FarmNeedGenerationTag>(m_QueryForFarmNeedingGeneration);

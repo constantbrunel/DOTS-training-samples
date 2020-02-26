@@ -3,12 +3,13 @@ using Unity.Entities;
 using Unity.Mathematics;
 using System.Collections.Generic;
 
-[ConverterVersion("bouilla", 6)]
+[ConverterVersion("bouilla", 8)]
 public class Farm : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
 {
 	public Vector2Int MapSize;
 	public int StoreCount;
 	public int RockSpawnAttempts;
+    public int InitialFarmerCount;
 
     public GameObject TileGameObject;
     public GameObject StoreGameObject;
@@ -23,6 +24,7 @@ public class Farm : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReference
             MapSize = new int2(MapSize.x, MapSize.y),
             StoreCount = StoreCount,
             RockSpawnAttempts = RockSpawnAttempts,
+            InitialFarmerCount = InitialFarmerCount,
             TileEntity = conversionSystem.GetPrimaryEntity(TileGameObject),
             StoreEntity = conversionSystem.GetPrimaryEntity(StoreGameObject),
             RockEntity = conversionSystem.GetPrimaryEntity(RockGameObject),
@@ -47,6 +49,7 @@ public struct FarmData : IComponentData
     public int2 MapSize;
     public int StoreCount;
     public int RockSpawnAttempts;
+    public int InitialFarmerCount;
 
     public Entity TileEntity;
     public Entity StoreEntity;
