@@ -1,22 +1,35 @@
 ﻿using UnityEngine;
 using Unity.Entities;
 using Unity.Mathematics;
+using System.Collections.Generic;
 
-public class Farm : MonoBehaviour, IConvertGameObjectToEntity
+[ConverterVersion("bouilla", 1)]
+public class Farm : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
 {
 	public Vector2Int MapSize;
 	public int StoreCount;
 	public int RockSpawnAttempts;
 
-	public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
+    public GameObject TileGameObject;
+    public GameObject StoreGameObject;
+
+    public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
     {
         dstManager.AddComponentData(entity, new FarmData()
         {
             MapSize = new int2(MapSize.x, MapSize.y),
             StoreCount = StoreCount,
-            RockSpawnAttempts = RockSpawnAttempts
+            RockSpawnAttempts = RockSpawnAttempts,
+            TileEntity = conversionSystem.GetPrimaryEntity(TileGameObject),
+            StoreEntity = conversionSystem.GetPrimaryEntity(StoreGameObject)
         });
         dstManager.AddComponent<FarmNeedGenerationTag>(entity);
+    }
+
+    public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
+    {
+        referencedPrefabs.Add(TileGameObject);
+        referencedPrefabs.Add(StoreGameObject);
     }
 }
 
@@ -25,6 +38,9 @@ public struct FarmData : IComponentData
     public int2 MapSize;
     public int StoreCount;
     public int RockSpawnAttempts;
+
+    public Entity TileEntity;
+    public Entity StoreEntity;
 }
 
 public struct FarmNeedGenerationTag : IComponentData{}
