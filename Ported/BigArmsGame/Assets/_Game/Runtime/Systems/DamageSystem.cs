@@ -21,14 +21,14 @@ public class RockDamageSystem : JobComponentSystem
     {
         var commandBuffer = commandBufferSystem.CreateCommandBuffer().ToConcurrent();
 
-        var rockDamages = query.ToComponentDataArray<Damage>(Unity.Collections.Allocator.TempJob);
+        var damages = query.ToComponentDataArray<Damage>(Unity.Collections.Allocator.TempJob);
         var jobDeps = Entities.ForEach((Entity entity, int entityInQueryIndex, ref HealthData healthData) =>
         {
-            foreach(var rockDamage in rockDamages)
+            foreach(var damage in damages)
             {
-                if (rockDamage.Target == entity)
+                if (damage.Target == entity)
                 {
-                    healthData.Value -= rockDamage.Value;
+                    healthData.Value -= damage.Value;
                 }
             }
 
@@ -37,7 +37,7 @@ public class RockDamageSystem : JobComponentSystem
                 commandBuffer.DestroyEntity(entityInQueryIndex, entity);
             }
             
-        }).Schedule(inputDeps);
+        }).WithDeallocateOnJobCompletion(damages).Schedule(inputDeps);
 
         EntityManager.DestroyEntity(query);
 
