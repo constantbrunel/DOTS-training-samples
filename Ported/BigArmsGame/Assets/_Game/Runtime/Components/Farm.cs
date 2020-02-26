@@ -13,6 +13,8 @@ public class Farm : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReference
     public GameObject TileGameObject;
     public GameObject StoreGameObject;
     public GameObject RockGameObject;
+    public GameObject FarmerGameObject;
+    public GameObject DroneGameObject;
 
     public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
     {
@@ -23,7 +25,9 @@ public class Farm : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReference
             RockSpawnAttempts = RockSpawnAttempts,
             TileEntity = conversionSystem.GetPrimaryEntity(TileGameObject),
             StoreEntity = conversionSystem.GetPrimaryEntity(StoreGameObject),
-            RockEntity = conversionSystem.GetPrimaryEntity(RockGameObject)
+            RockEntity = conversionSystem.GetPrimaryEntity(RockGameObject),
+            FarmerEntity = conversionSystem.GetPrimaryEntity(FarmerGameObject),
+            DroneEntity = conversionSystem.GetPrimaryEntity(DroneGameObject)
         });
         dstManager.AddComponent<FarmNeedGenerationTag>(entity);
     }
@@ -33,6 +37,8 @@ public class Farm : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReference
         referencedPrefabs.Add(TileGameObject);
         referencedPrefabs.Add(StoreGameObject);
         referencedPrefabs.Add(RockGameObject);
+        referencedPrefabs.Add(FarmerGameObject);
+        referencedPrefabs.Add(DroneGameObject);
     }
 }
 
@@ -45,6 +51,8 @@ public struct FarmData : IComponentData
     public Entity TileEntity;
     public Entity StoreEntity;
     public Entity RockEntity;
+    public Entity FarmerEntity;
+    public Entity DroneEntity;
 }
 
 public struct FarmNeedGenerationTag : IComponentData{}
