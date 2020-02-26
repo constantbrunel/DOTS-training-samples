@@ -130,7 +130,7 @@ public class FarmGeneratorSystem : JobComponentSystem
         }
 
         int spawnedFarmer = 0;
-        while(spawnedFarmer <= farm.InitialFarmerCount)
+        while(spawnedFarmer < farm.InitialFarmerCount)
         {
             int x = UnityEngine.Random.Range(0, mapX);
             int y = UnityEngine.Random.Range(0, mapY);
