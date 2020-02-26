@@ -17,12 +17,20 @@ public class FarmGeneratorSystem : JobComponentSystem
         RequireForUpdate(m_QueryForFarmNeedingGeneration);
     }
 
+    protected override void OnDestroy()
+    {
+        tiles.Dispose();
+        base.OnDestroy();
+    }
+
     protected override JobHandle OnUpdate(JobHandle inputDeps)
     {
         FarmData farm = GetSingleton<FarmData>();
 
         int mapX = farm.MapSize.x;
         int mapY = farm.MapSize.y;
+
+        tiles = new NativeArray<TileDescriptor>(mapX * mapY, Allocator.Persistent);
 
         // Create tiles
         for (int x = 0; x < mapX; ++x)
@@ -67,7 +75,6 @@ public class FarmGeneratorSystem : JobComponentSystem
         }
 
         // Create rocks
-        bool[,] tileRocks = new bool[mapX, mapY];
         int rockSpawnAttempts = farm.RockSpawnAttempts;
         for (int i = 0; i < rockSpawnAttempts; i++)
         {
@@ -108,7 +115,11 @@ public class FarmGeneratorSystem : JobComponentSystem
                 {
                     for (int y = rockY; y <= rockY + height; y++)
                     {
-                        tileRocks[x, y] = true;
+                        tiles[x + mapX * y] = new TileDescriptor()
+                        {
+                            TileType = TileTypes.Rock,
+                            Entity = rockEntity
+                        };
                     }
                 }
             }
