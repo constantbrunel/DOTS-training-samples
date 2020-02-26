@@ -34,24 +34,34 @@ public class FarmGeneratorSystem : JobComponentSystem
                 {
                     Value = new float3(x, 0, y)
                 });
+                tiles[mapX * y + x] = new TileDescriptor()
+                {
+                    TileType = TileTypes.None,
+                    Entity = Entity.Null
+                };
             }
         }
 
         // Create store
         int spawnedStores = 0;
-        bool[,] storeTiles = new bool[mapX, mapY];
         while (spawnedStores < farm.StoreCount)
         {
             int x = UnityEngine.Random.Range(0, mapX);
             int y = UnityEngine.Random.Range(0, mapY);
-            if (storeTiles[x, y] == false)
+            if (tiles[x + y * mapX].TileType != TileTypes.Store)
             {
-                storeTiles[x, y] = true;
                 Entity storeEntity = EntityManager.Instantiate(farm.StoreEntity);
                 EntityManager.SetComponentData(storeEntity, new Translation()
                 {
                     Value = new float3(x, 0, y)
                 });
+
+                tiles[x + y * mapX] = new TileDescriptor()
+                {
+                    TileType = TileTypes.Store,
+                    Entity = storeEntity
+                };
+
                 spawnedStores++;
             }
         }
@@ -71,7 +81,7 @@ public class FarmGeneratorSystem : JobComponentSystem
             {
                 for (int y = rockY; y <= rockY + height; y++)
                 {
-                    if (tileRocks[x, y] == true || storeTiles[x, y])
+                    if (tiles[x + mapX * y].TileType == TileTypes.Rock|| tiles[x + mapX * y].TileType == TileTypes.Store)
                     {
                         blocked = true;
                         break;
