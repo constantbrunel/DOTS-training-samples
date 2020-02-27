@@ -3,14 +3,25 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
+using UnityEngine;
 
 [UpdateInGroup(typeof(InitializationSystemGroup))]
 public class TileModifierSystem : JobComponentSystem
 {
+    protected override void OnCreate()
+    {
+        base.OnCreate();
+
+        RequireForUpdate(GetEntityQuery(typeof(TileModifierData)));
+    }
+
     protected override JobHandle OnUpdate(JobHandle inputDeps)
     {
         var tiles = World.GetExistingSystem<FarmGeneratorSystem>().tiles;
         var map = GetSingleton<FarmData>();
+
+        Debug.Log("Print map before");
+        PrintMapUtils.PrintMap(tiles, map.MapSize.x, map.MapSize.y);
 
         Entities.ForEach((in TileModifierData modifierData) =>
         {
@@ -37,6 +48,9 @@ public class TileModifierSystem : JobComponentSystem
                     }
             }
         }).WithStructuralChanges().WithoutBurst().Run();
+
+        Debug.Log("Print map after");
+        PrintMapUtils.PrintMap(World.GetExistingSystem<FarmGeneratorSystem>().tiles, map.MapSize.x, map.MapSize.y);
 
         EntityManager.DestroyEntity(GetEntityQuery(typeof(TileModifierData)));
         return inputDeps;
