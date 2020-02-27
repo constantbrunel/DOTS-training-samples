@@ -16,6 +16,8 @@ public class MoneySystem : JobComponentSystem
 
         var bankEntity = EntityManager.CreateEntity();
         EntityManager.AddComponentData(bankEntity, new MoneyData { FarmerBank = 0, DroneBank = 0, FarmerCost = 5, DroneCost = 20 });
+
+        RequireSingletonForUpdate<FarmData>();
     }
 
     protected override JobHandle OnUpdate(JobHandle inputDeps)
