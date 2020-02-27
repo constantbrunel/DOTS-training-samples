@@ -16,20 +16,48 @@ public class SellPlantBehaviorSystem : JobComponentSystem
         base.OnCreate();
         m_EndSimulationECBSystem = World.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
         m_FarmGeneratorSystem = World.GetOrCreateSystem<FarmGeneratorSystem>();
+
+        RequireSingletonForUpdate<FarmData>();
     }
 
     protected override JobHandle OnUpdate(JobHandle inputDeps)
     {
         var ecb = m_EndSimulationECBSystem.CreateCommandBuffer().ToConcurrent();
         FarmData farm = GetSingleton<FarmData>();
-
+        var allReservedPlants = GetComponentDataFromEntity<IsReservedTag>();
         NativeArray<TileDescriptor> array = m_FarmGeneratorSystem.tiles;
         int2 mapSize = m_FarmGeneratorSystem.MapSize;
 
-        var jh = Entities.WithReadOnly(array).ForEach((Entity entity, int entityInQueryIndex, ref TargetEntityData target, ref DynamicBuffer<PathData> pathData, ref FarmerBehaviorData behaviorData, in LogicalPosition pos) =>
+        var random = new Unity.Mathematics.Random((uint)UnityEngine.Time.realtimeSinceStartup);
+
+        var jh = Entities.WithReadOnly(array).WithReadOnly(allReservedPlants).ForEach((Entity entity, int entityInQueryIndex, ref TargetEntityData target, ref DynamicBuffer<PathData> pathData, ref FarmerBehaviorData behaviorData, in LogicalPosition pos) =>
         {
             if (behaviorData.Value != FarmerBehavior.SellPlant)
             {
+                return;
+            }
+
+            if(target.Value == Entity.Null && behaviorData.HeldPlant == Entity.Null)
+            {
+                // Find near harvestable to continue
+                NativeList<int> outputPath = new NativeList<int>(Allocator.TempJob);
+                var result = Pathing.FindNearbyHarvestable(array, mapSize.x, mapSize.y, pos.PositionX, pos.PositionY, 5, ref outputPath);
+
+                if (result != Entity.Null && !allReservedPlants.Exists(result))
+                {
+                    DynamicBuffer<PathData> path = new DynamicBuffer<PathData>();
+                    for (int i = 0; i < outputPath.Length; ++i)
+                    {
+                        Pathing.Unhash(mapSize.x, mapSize.y, outputPath[i], out int posX, out int posY);
+                        path.Add(new PathData { Position = new int2(posX, posY) });
+                    }
+                    target.Value = result;
+                    pathData = path;
+                }
+                else
+                {
+                    behaviorData.Value = FarmerBehavior.None;
+                }
                 return;
             }
 
@@ -37,9 +65,14 @@ public class SellPlantBehaviorSystem : JobComponentSystem
             {
                 if (behaviorData.HeldPlant == Entity.Null)
                 {
+                    // Store the reference to the plant entity
                     behaviorData.HeldPlant = target.Value;
 
-                    // Copy from Pathing, implement a utility method
+                    // Create the tile modifier to remove planted type and be able to plant see again on this tile.
+                    var tileModifierEntity = ecb.CreateEntity(entityInQueryIndex);
+                    ecb.AddComponent(entityInQueryIndex, tileModifierEntity, new TileModifierData { NextType = TileTypes.Tilled, PosX = pos.PositionX, PosY = pos.PositionY });
+
+                    // Find path to the store
                     NativeList<int> outputPath = new NativeList<int>(Allocator.TempJob);
                     var result = Pathing.FindNearbyStore(array, mapSize.x, mapSize.y, pos.PositionX, pos.PositionY, 20, ref outputPath);
 
@@ -62,7 +95,36 @@ public class SellPlantBehaviorSystem : JobComponentSystem
                     ecb.RemoveComponent<IsReservedTag>(entityInQueryIndex, behaviorData.HeldPlant);
                     ecb.AddComponent(entityInQueryIndex, behaviorData.HeldPlant, new IsSoldData { StoreX = pos.PositionX, StoreY = pos.PositionY });
 
-                    // TODO - Find another target to sell ?
+                    behaviorData.HeldPlant = Entity.Null;
+
+                    // reset behavior
+                    float rand = random.NextFloat(0f, 1f);
+                    if(rand <= 0.2f)
+                    {
+                        behaviorData.Value = FarmerBehavior.None;
+                    }
+                    else
+                    {
+                        // Find near harvestable to continue
+                        NativeList<int> outputPath = new NativeList<int>(Allocator.TempJob);
+                        var result = Pathing.FindNearbyHarvestable(array, mapSize.x, mapSize.y, pos.PositionX, pos.PositionY, 5, ref outputPath);
+
+                        if (result != Entity.Null)
+                        {
+                            DynamicBuffer<PathData> path = new DynamicBuffer<PathData>();
+                            for (int i = 0; i < outputPath.Length; ++i)
+                            {
+                                Pathing.Unhash(mapSize.x, mapSize.y, outputPath[i], out int posX, out int posY);
+                                path.Add(new PathData { Position = new int2(posX, posY) });
+                            }
+                            target.Value = result;
+                            pathData = path;
+                        }
+                        else
+                        {
+                            behaviorData.Value = FarmerBehavior.None;
+                        }
+                    }
                 }
             }
         }).Schedule(inputDeps);

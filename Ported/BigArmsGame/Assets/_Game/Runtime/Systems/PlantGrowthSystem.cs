@@ -29,6 +29,9 @@ public class PlantGrowthSystem : JobComponentSystem
                 data.Growth = data.GrowDuration;
                 ecb.RemoveComponent<IsGrowingTag>(entityInQueryIndex, entity);
                 ecb.AddComponent<IsHarvestableTag>(entityInQueryIndex, entity);
+
+                var tileModifierEntity = ecb.CreateEntity(entityInQueryIndex);
+                ecb.AddComponent(entityInQueryIndex, tileModifierEntity, new TileModifierData { NextType = TileTypes.Harvestable, PosX = data.PositionX, PosY = data.PositionY });
             }
         }).Schedule(inputDeps);
 

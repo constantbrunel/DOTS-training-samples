@@ -52,6 +52,11 @@ public static class Pathing
 		return IsRock(array, mapSizeX, x, y);
 	}
 
+	public static Entity FindNearbyHarvestable(NativeArray<TileDescriptor> array, int mapSizeX, int mapSizeY, int x, int y, int range, ref NativeList<int> outputPath)
+	{
+		return FindNearby(array, mapSizeX, mapSizeY, x, y, range, TileTypes.Harvestable, ref outputPath);
+	}
+
 	public static Entity FindNearbyRock(NativeArray<TileDescriptor> array, int mapSizeX, int mapSizeY, int x, int y, int range, ref NativeList<int> outputPath)
 	{
 		return FindNearby(array, mapSizeX, mapSizeY, x, y, range, TileTypes.Rock, ref outputPath);
