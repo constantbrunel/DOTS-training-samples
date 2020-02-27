@@ -24,14 +24,14 @@ public class SmashRockBehaviorSystem : JobComponentSystem
         var tiles = World.GetExistingSystem<FarmGeneratorSystem>().tiles;
         var map = GetSingleton<FarmData>();
 
-        var jobDeps = Entities.WithAll<FarmerTag>().ForEach((Entity entity, int entityInQueryIndex, ref FarmerBehaviorData behavior, ref TargetEntityData targetEntityData, in DynamicBuffer<PathData> pathData) =>
+        var jobDeps = Entities.WithAll<FarmerTag>().ForEach((Entity entity, int entityInQueryIndex, ref FarmerBehaviorData behavior, ref TargetEntityData targetEntityData, in DynamicBuffer<PathData> pathData, in LogicalPosition logicalPosition) =>
         {
             if (behavior.Value == FarmerBehavior.SmashRock)
             {
                 if (targetEntityData.Value == Entity.Null)
                 {
                     var outputPath = new NativeList<int>(Allocator.Temp);
-                    targetEntityData.Value = Pathing.FindNearbyRock(tiles, map.MapSize.x, map.MapSize.y, behavior.PositionX, behavior.PositionY, 20, ref outputPath);
+                    targetEntityData.Value = Pathing.FindNearbyRock(tiles, map.MapSize.x, map.MapSize.y, logicalPosition.PositionX, logicalPosition.PositionY, 20, ref outputPath);
                     if (targetEntityData.Value == null)
                     {
                         behavior.Value = FarmerBehavior.None;

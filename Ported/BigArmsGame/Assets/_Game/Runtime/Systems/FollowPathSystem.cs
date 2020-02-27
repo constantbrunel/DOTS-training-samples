@@ -16,12 +16,12 @@ public class FollowPathSystem : JobComponentSystem
 		var deltaTime = Time.DeltaTime;
 
 		return Entities
-			.ForEach((ref Translation trans, ref DynamicBuffer<PathData> path, in FarmerBehaviorData behavior) =>
+			.ForEach((ref Translation trans, ref DynamicBuffer<PathData> path, in FarmerBehaviorData behavior, in LogicalPosition logicalPosition) =>
         {
 			if (path.Length > 0)
 			{
 				int2 nextTile = path[path.Length - 1].Position;
-				if (behavior.PositionX == nextTile.x && behavior.PositionY == nextTile.y)
+				if (logicalPosition.PositionX == nextTile.x && logicalPosition.PositionY == nextTile.y)
 				{
 					path.RemoveAt(path.Length - 1);
 				}

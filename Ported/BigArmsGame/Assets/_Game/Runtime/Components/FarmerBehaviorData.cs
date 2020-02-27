@@ -12,6 +12,4 @@ public enum FarmerBehavior
 public struct FarmerBehaviorData : IComponentData
 {
     public FarmerBehavior Value;
-    public int PositionX;
-    public int PositionY;
 }
