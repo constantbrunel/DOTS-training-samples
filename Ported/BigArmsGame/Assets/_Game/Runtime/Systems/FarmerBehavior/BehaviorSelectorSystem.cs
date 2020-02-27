@@ -17,7 +17,7 @@ public class BehaviorSelectorSystem : JobComponentSystem
     {
         var ecb = m_EndSimulationSystemGroupCommandBuffer.CreateCommandBuffer().ToConcurrent();
 
-        var random = new Unity.Mathematics.Random((uint)Time.ElapsedTime);
+        //var random = new Unity.Mathematics.Random((uint)Time.ElapsedTime);
 
         var jobHandle = Entities
             .WithAll<FarmerTag>()
@@ -29,7 +29,7 @@ public class BehaviorSelectorSystem : JobComponentSystem
                     pathBuffer.Clear();
 
                     // Select a behavior
-                    int rand = random.NextInt(0, 4);
+                    int rand = 0;// random.NextInt(0, 4);
                     if (rand == 0)
                     {
                         ecb.SetComponent(entityInQueryIndex, entity, new FarmerBehaviorData() { Value = FarmerBehavior.SmashRock });

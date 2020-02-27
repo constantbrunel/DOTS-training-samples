@@ -39,8 +39,10 @@ public class SmashRockBehaviorSystem : JobComponentSystem
                     else
                     {
                         var buffer = commandBuffer.SetBuffer<PathData>(entityInQueryIndex, entity);
-                        foreach (var path in outputPath)
+                        
+                        for(int i = 0; i < outputPath.Length; ++i)
                         {
+                            var path = outputPath[i];
                             buffer.Add(new PathData()
                             {
                                 Position = path

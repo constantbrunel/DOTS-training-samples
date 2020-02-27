@@ -4,14 +4,8 @@ using UnityEngine;
 
 public static class Pathing
 {
-
-	public delegate bool IsNavigableDelegate(NativeArray<TileDescriptor> array, int mapSizeX, int x, int y);
-	public delegate bool CheckMatchDelegate(NativeArray<TileDescriptor> array, int mapSizeX, int x, int y);
-
 	static readonly int[] dirsX = new int[] { 1, -1, 0, 0 };
 	static readonly int[] dirsY = new int[] { 0, 0, 1, -1 };
-
-	public static RectInt fullMapZone;
 
 	public static int Hash(int mapSizeX, int x, int y)
 	{
@@ -66,7 +60,7 @@ public static class Pathing
 		NativeList<int> outputTiles = new NativeList<int>(Allocator.Temp);
 		var result = Entity.Null;
 
-		int rockPosHash = SearchForOne(array, mapSizeX, mapSizeY, x, y, range, IsNavigableDefault, IsRock, fullMapZone, ref visitedTiles, ref activeTiles, ref nextTiles, ref outputTiles);
+		int rockPosHash = SearchForOne(array, mapSizeX, mapSizeY, x, y, range, TileTypes.Rock, ref visitedTiles, ref activeTiles, ref nextTiles, ref outputTiles);
 		if (rockPosHash != -1)
 		{
 			int rockX, rockY;
@@ -90,9 +84,7 @@ public static class Pathing
 		int startX,
         int startY,
         int range,
-        IsNavigableDelegate IsNavigable,
-        CheckMatchDelegate CheckMatch,
-        RectInt requiredZone,
+        TileTypes tileType,
         ref NativeArray<int> visitedTiles,
 	    ref NativeList<int> activeTiles,
 	    ref NativeList<int> nextTiles,
@@ -106,9 +98,7 @@ public static class Pathing
             startX,
             startY,
             range,
-            IsNavigable,
-            CheckMatch,
-            requiredZone,
+            tileType,
             ref visitedTiles,
             ref activeTiles,
             ref nextTiles,
@@ -131,9 +121,7 @@ public static class Pathing
 		int startX,
         int startY,
         int range,
-        IsNavigableDelegate IsNavigable,
-        CheckMatchDelegate CheckMatch,
-        RectInt requiredZone,
+        TileTypes tileType,
 		ref NativeArray<int> visitedTiles,
 		ref NativeList<int> activeTiles,
 		ref NativeList<int> nextTiles,
@@ -183,16 +171,16 @@ public static class Pathing
 					{
 
 						int hash = Hash(mapSizeX, x2, y2);
-						if (IsNavigable(array, mapSizeX, x2, y2))
+						if (IsNavigableDefault(array, mapSizeX, x2, y2))
 						{
 							visitedTiles[Hash(mapSizeX, x2, y2)] = steps;
 							nextTiles.Add(hash);
 						}
-						if (x2 >= requiredZone.xMin && x2 <= requiredZone.xMax)
+						if (x2 >= 0 && x2 <= mapSizeX)
 						{
-							if (y2 >= requiredZone.yMin && y2 <= requiredZone.yMax)
+							if (y2 >= 0 && y2 <= mapSizeY)
 							{
-								if (CheckMatch(array, mapSizeX, x2, y2))
+								if (array[Hash(mapSizeX, x2, y2)].TileType == tileType)
 								{
 									outputTiles.Add(hash);
 									if (maxResultCount != 0 && outputTiles.Length >= maxResultCount)
