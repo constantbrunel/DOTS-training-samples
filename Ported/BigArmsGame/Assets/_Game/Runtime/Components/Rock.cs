@@ -13,5 +13,6 @@ public class Rock : MonoBehaviour, IConvertGameObjectToEntity
         { 
             Value = Health
         });
+        dstManager.AddComponent<LogicalPosition>(entity);
     }
 }

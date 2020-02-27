@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using Unity.Entities;
 
-[ConverterVersion("ZBLAH", 1)]
+[ConverterVersion("ZBLAH", 2)]
 public class Farmer : MonoBehaviour, IConvertGameObjectToEntity
 {
     public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
@@ -10,5 +10,6 @@ public class Farmer : MonoBehaviour, IConvertGameObjectToEntity
         dstManager.AddComponent<FarmerTag>(entity);
         dstManager.AddComponent<FarmerBehaviorData>(entity);
         dstManager.AddComponent<TargetEntityData>(entity);
+        dstManager.AddComponent<LogicalPosition>(entity);
     }
 }
