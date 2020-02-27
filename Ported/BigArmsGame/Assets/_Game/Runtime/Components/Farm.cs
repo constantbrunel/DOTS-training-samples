@@ -3,7 +3,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using System.Collections.Generic;
 
-[ConverterVersion("bouilla", 8)]
+[ConverterVersion("bouilla", 9)]
 public class Farm : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
 {
 	public Vector2Int MapSize;
