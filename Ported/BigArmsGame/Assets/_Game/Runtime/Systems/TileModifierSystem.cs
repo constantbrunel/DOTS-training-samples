@@ -4,7 +4,7 @@ using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
 
-[UpdateInGroup(typeof(SimulationSystemGroup))]
+[UpdateInGroup(typeof(InitializationSystemGroup))]
 public class TileModifierSystem : JobComponentSystem
 {
     protected override JobHandle OnUpdate(JobHandle inputDeps)
@@ -39,7 +39,6 @@ public class TileModifierSystem : JobComponentSystem
         }).WithStructuralChanges().WithoutBurst().Run();
 
         EntityManager.DestroyEntity(GetEntityQuery(typeof(TileModifierData)));
-
-        return default;
+        return inputDeps;
     }
 }
