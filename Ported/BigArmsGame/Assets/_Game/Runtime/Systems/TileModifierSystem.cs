@@ -18,15 +18,15 @@ public class TileModifierSystem : JobComponentSystem
     protected override JobHandle OnUpdate(JobHandle inputDeps)
     {
         var tiles = World.GetExistingSystem<FarmGeneratorSystem>().tiles;
-        var map = GetSingleton<FarmData>();
+        var mapSize = World.GetExistingSystem<FarmGeneratorSystem>().MapSize;
 
         Debug.Log("Print map before");
-        PrintMapUtils.PrintMap(tiles, map.MapSize.x, map.MapSize.y);
+        PrintMapUtils.PrintMap(tiles, mapSize.x, mapSize.y);
 
         Entities.ForEach((in TileModifierData modifierData) =>
         {
             UnityEngine.Debug.Log($"TileModifier ({modifierData.PosX},{modifierData.PosY} - new type {modifierData.NextType})");
-            var tile = tiles[Pathing.Hash(map.MapSize.x, modifierData.PosX, modifierData.PosY)];
+            var tile = tiles[Pathing.Hash(mapSize.x, modifierData.PosX, modifierData.PosY)];
             switch (tile.TileType)
             {
                 case TileTypes.Rock:
@@ -40,7 +40,7 @@ public class TileModifierSystem : JobComponentSystem
                         {
                             for(int j = 0; j < sizeY; ++j)
                             {
-                                tiles[Pathing.Hash(map.MapSize.x, position.x + i, position.y + j)] = new TileDescriptor() { TileType = modifierData.NextType, Entity = Entity.Null };
+                                tiles[Pathing.Hash(mapSize.x, position.x + i, position.y + j)] = new TileDescriptor() { TileType = modifierData.NextType, Entity = Entity.Null };
                             }
                         }
 
@@ -51,7 +51,7 @@ public class TileModifierSystem : JobComponentSystem
         }).WithStructuralChanges().WithoutBurst().Run();
 
         Debug.Log("Print map after");
-        PrintMapUtils.PrintMap(World.GetExistingSystem<FarmGeneratorSystem>().tiles, map.MapSize.x, map.MapSize.y);
+        PrintMapUtils.PrintMap(World.GetExistingSystem<FarmGeneratorSystem>().tiles, mapSize.x, mapSize.y);
 
         EntityManager.DestroyEntity(GetEntityQuery(typeof(TileModifierData)));
         return inputDeps;

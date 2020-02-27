@@ -22,10 +22,9 @@ public class SellPlantBehaviorSystem : JobComponentSystem
     {
         var ecb = m_EndSimulationECBSystem.CreateCommandBuffer().ToConcurrent();
         FarmData farm = GetSingleton<FarmData>();
-        int mapSizeX = farm.MapSize.x;
-        int mapSizeY = farm.MapSize.y;
 
         NativeArray<TileDescriptor> array = m_FarmGeneratorSystem.tiles;
+        int2 mapSize = m_FarmGeneratorSystem.MapSize;
 
         var jh = Entities.WithReadOnly(array).ForEach((Entity entity, int entityInQueryIndex, ref TargetEntityData target, ref DynamicBuffer<PathData> pathData, ref FarmerBehaviorData behaviorData, in LogicalPosition pos) =>
         {
@@ -34,7 +33,7 @@ public class SellPlantBehaviorSystem : JobComponentSystem
                 return;
             }
 
-            if (GetEntityOnTile(array, farm.MapSize.x, pos.PositionX, pos.PositionY) == target.Value)
+            if (GetEntityOnTile(array, mapSize.x, pos.PositionX, pos.PositionY) == target.Value)
             {
                 if (behaviorData.HeldPlant == Entity.Null)
                 {
@@ -42,14 +41,14 @@ public class SellPlantBehaviorSystem : JobComponentSystem
 
                     // Copy from Pathing, implement a utility method
                     NativeList<int> outputPath = new NativeList<int>(Allocator.TempJob);
-                    var result = Pathing.FindNearbyStore(array, mapSizeX, mapSizeY, pos.PositionX, pos.PositionY, 20, ref outputPath);
+                    var result = Pathing.FindNearbyStore(array, mapSize.x, mapSize.y, pos.PositionX, pos.PositionY, 20, ref outputPath);
 
                     if (result != Entity.Null)
                     {
                         DynamicBuffer<PathData> path = new DynamicBuffer<PathData>();
                         for (int i = 0; i < outputPath.Length; ++i)
                         {
-                            Pathing.Unhash(farm.MapSize.x, farm.MapSize.y, outputPath[i], out int posX, out int posY);
+                            Pathing.Unhash(mapSize.x, mapSize.y, outputPath[i], out int posX, out int posY);
                             path.Add(new PathData { Position = new int2(posX, posY) });
                         }
                         target.Value = result;

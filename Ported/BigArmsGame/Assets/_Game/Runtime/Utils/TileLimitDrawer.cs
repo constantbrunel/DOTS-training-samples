@@ -6,10 +6,17 @@ public class TileLimitDrawer : MonoBehaviour
     public void OnDrawGizmos()
     {
         EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+        
         var query = entityManager.CreateEntityQuery(typeof(FarmData));
+        if(query.IsEmptyIgnoreFilter)
+        {
+            return;
+        }
+
         var farms = query.ToComponentDataArray<FarmData>(Unity.Collections.Allocator.TempJob);
         int x = farms[0].MapSize.x;
         int y = farms[0].MapSize.y;
+
 
         for(float i = -0.5f; i <= x; ++i)
         {

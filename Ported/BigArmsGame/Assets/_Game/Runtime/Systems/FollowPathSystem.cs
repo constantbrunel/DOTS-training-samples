@@ -11,7 +11,7 @@ public class FollowPathSystem : JobComponentSystem
     protected override JobHandle OnUpdate(JobHandle inputDeps)
     {
 		var tiles = World.GetExistingSystem<FarmGeneratorSystem>().tiles;
-		var map = GetSingleton<FarmData>();
+        var mapSize = World.GetExistingSystem<FarmGeneratorSystem>().MapSize;
 
 		var deltaTime = Time.DeltaTime;
 
@@ -27,10 +27,10 @@ public class FollowPathSystem : JobComponentSystem
 				}
 				else
 				{
-					if (Pathing.IsBlocked(tiles, map.MapSize.x, map.MapSize.y, nextTile.x, nextTile.y) == false)
+					if (Pathing.IsBlocked(tiles, mapSize.x, mapSize.y, nextTile.x, nextTile.y) == false)
 					{
 						float offset = .5f;
-						if (Pathing.IsPlant(tiles, map.MapSize.x, nextTile.x, nextTile.y))
+						if (Pathing.IsPlant(tiles, mapSize.x, nextTile.x, nextTile.y))
 						{
 							offset = .01f;
 						}
