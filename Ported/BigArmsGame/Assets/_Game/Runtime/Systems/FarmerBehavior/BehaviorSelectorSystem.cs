@@ -29,7 +29,7 @@ public class BehaviorSelectorSystem : JobComponentSystem
                     pathBuffer.Clear();
 
                     // Select a behavior
-                    int rand = 0;// random.NextInt(0, 4);
+                    int rand = 1;// random.NextInt(0, 4);
                     if (rand == 0)
                     {
                         ecb.SetComponent(entityInQueryIndex, entity, new FarmerBehaviorData() { Value = FarmerBehavior.SmashRock });
