@@ -25,7 +25,8 @@ public class DamageSystem : JobComponentSystem
         var commandBuffer = commandBufferSystem.CreateCommandBuffer();
 
         var damages = query.ToComponentDataArray<Damage>(Unity.Collections.Allocator.TempJob);
-        var jobDeps = Entities.ForEach((Entity entity, int entityInQueryIndex, ref HealthData healthData, ref NonUniformScale scale) =>
+
+        var jobDeps = Entities.ForEach((Entity entity, int entityInQueryIndex, ref HealthData healthData, ref NonUniformScale scale, in LogicalPosition position) =>
         {
             for(int i = 0; i < damages.Length; ++i)
             {
@@ -40,7 +41,8 @@ public class DamageSystem : JobComponentSystem
 
             if(healthData.CurrentValue <= 0)
             {
-                commandBufferConcurrent.DestroyEntity(entityInQueryIndex, entity);
+                var entModifier = commandBufferConcurrent.CreateEntity(entityInQueryIndex);
+                commandBufferConcurrent.AddComponent(entityInQueryIndex, entModifier, new TileModifierData() { PosX = position.PositionX, PosY = position.PositionY, NextType = TileTypes.None });
             }
             
         }).WithDeallocateOnJobCompletion(damages).Schedule(inputDeps);
