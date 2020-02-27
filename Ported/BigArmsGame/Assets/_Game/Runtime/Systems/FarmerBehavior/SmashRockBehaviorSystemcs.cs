@@ -25,13 +25,12 @@ public class SmashRockBehaviorSystem : JobComponentSystem
 
         var jobDeps = Entities.WithAll<FarmerTag>().ForEach((Entity entity, int entityInQueryIndex, ref FarmerBehaviorData behavior, ref TargetEntityData targetEntityData, in DynamicBuffer<PathData> pathData) =>
         {
-        if (behavior.Value == FarmerBehavior.SmashRock)
-        {
-                if (targetEntityData.Value == null)
+            if (behavior.Value == FarmerBehavior.SmashRock)
+            {
+                if (targetEntityData.Value == Entity.Null)
                 {
                     var outputPath = new NativeList<int>();
                     targetEntityData.Value = Pathing.FindNearbyRock(tiles, map.MapSize.x, map.MapSize.y, behavior.PositionX, behavior.PositionY, 20, ref outputPath);
-                    targetEntityData.Value = Entity.Null;
                     if (targetEntityData.Value == null)
                     {
                         behavior.Value = FarmerBehavior.None;
@@ -49,18 +48,17 @@ public class SmashRockBehaviorSystem : JobComponentSystem
                             });
                         }
                     }
+                    outputPath.Dispose();
                 }
-                else
+                else if (pathData.Length == 1)
                 {
-                    if (pathData.Length == 1)
+                    var damageEntity = commandBuffer.CreateEntity(entityInQueryIndex);
+                    commandBuffer.AddComponent(entityInQueryIndex, damageEntity, new Damage()
                     {
-                        var damageEntity = commandBuffer.CreateEntity(entityInQueryIndex);
-                        commandBuffer.AddComponent(entityInQueryIndex, damageEntity, new Damage()
-                        {
-                            Value = 1,
-                            Source = entity
-                        });
-                    }
+                        Value = 1,
+                        Source = entity,
+                        Target = targetEntityData.Value
+                    });
                 }
             }
 
