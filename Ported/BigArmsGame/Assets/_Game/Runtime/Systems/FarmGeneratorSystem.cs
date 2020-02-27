@@ -106,9 +106,16 @@ public class FarmGeneratorSystem : JobComponentSystem
                 int scaleWidth = width + 1;
                 int scaleHeight = height + 1;
                 Entity rockEntity = EntityManager.Instantiate(farm.RockEntity);
+
+                var health = UnityEngine.Random.Range(50, 250);
+                EntityManager.SetComponentData(rockEntity, new HealthData()
+                {
+                    CurrentValue = health,
+                    MaxValue = health
+                });
                 EntityManager.AddComponentData(rockEntity, new NonUniformScale()
                 {
-                    Value = new float3(scaleWidth, 1, scaleHeight)
+                    Value = new float3(scaleWidth, Rock.GetHeightFromHealth(health, health), scaleHeight)
                 });
                 EntityManager.SetComponentData(rockEntity, new Translation()
                 {

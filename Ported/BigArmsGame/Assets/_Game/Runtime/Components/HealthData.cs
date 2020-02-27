@@ -3,5 +3,6 @@
 // Used to grow plants and destroy rocks
 public struct HealthData : IComponentData
 {
-    public float Value;
+    public float MaxValue;
+    public float CurrentValue;
 }

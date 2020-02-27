@@ -10,9 +10,15 @@ public class Rock : MonoBehaviour, IConvertGameObjectToEntity
     public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
     {
         dstManager.AddComponentData(entity, new HealthData()
-        { 
-            Value = Health
+        {
+            CurrentValue = Health,
+            MaxValue = Health
         });
         dstManager.AddComponent<LogicalPosition>(entity);
+    }
+
+    public static float GetHeightFromHealth(float currentHealth, float maxHealth)
+    {
+        return currentHealth / maxHealth * maxHealth / 100;
     }
 }

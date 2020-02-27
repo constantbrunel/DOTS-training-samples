@@ -31,13 +31,14 @@ public class DamageSystem : JobComponentSystem
             {
                 if (damages[i].Target == entity)
                 {
-                    healthData.Value -= damages[i].Value;
+                    healthData.CurrentValue -= damages[i].Value;
                 }
             }
 
-            scale.Value = new float3(scale.Value.x, healthData.Value, scale.Value.z);
+            var y = healthData.CurrentValue / healthData.MaxValue * healthData.MaxValue / 100;
+            scale.Value = new float3(scale.Value.x, y, scale.Value.z);
 
-            if(healthData.Value <= 0)
+            if(healthData.CurrentValue <= 0)
             {
                 commandBufferConcurrent.DestroyEntity(entityInQueryIndex, entity);
             }
