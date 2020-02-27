@@ -27,7 +27,7 @@ public class DamageSystem : JobComponentSystem
         var damages = query.ToComponentDataArray<Damage>(Unity.Collections.Allocator.TempJob);
         var jobDeps = Entities.ForEach((Entity entity, int entityInQueryIndex, ref HealthData healthData, ref NonUniformScale scale) =>
         {
-            for(var i = 0; i < damages.Length; i++)
+            for(int i = 0; i < damages.Length; ++i)
             {
                 if (damages[i].Target == entity)
                 {
