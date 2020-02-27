@@ -3,7 +3,7 @@ using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
 
-public class RockDamageSystem : JobComponentSystem
+public class DamageSystem : JobComponentSystem
 {
     private EntityQuery query;
     private EntityCommandBufferSystem commandBufferSystem;
@@ -22,15 +22,16 @@ public class RockDamageSystem : JobComponentSystem
     protected override JobHandle OnUpdate(JobHandle inputDeps)
     {
         var commandBuffer = commandBufferSystem.CreateCommandBuffer().ToConcurrent();
+        var ecb = commandBufferSystem.CreateCommandBuffer();
 
         var damages = query.ToComponentDataArray<Damage>(Unity.Collections.Allocator.TempJob);
         var jobDeps = Entities.ForEach((Entity entity, int entityInQueryIndex, ref HealthData healthData, ref NonUniformScale scale) =>
         {
-            foreach(var damage in damages)
+            for(int i = 0; i < damages.Length; ++i)
             {
-                if (damage.Target == entity)
+                if (damages[i].Target == entity)
                 {
-                    healthData.Value -= damage.Value;
+                    healthData.Value -= damages[i].Value;
                 }
             }
 
@@ -43,7 +44,7 @@ public class RockDamageSystem : JobComponentSystem
             
         }).WithDeallocateOnJobCompletion(damages).Schedule(inputDeps);
 
-        EntityManager.DestroyEntity(query);
+        ecb.DestroyEntity(query);
 
         commandBufferSystem.AddJobHandleForProducer(jobDeps);
 
