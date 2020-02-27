@@ -115,7 +115,7 @@ public class FarmGeneratorSystem : JobComponentSystem
                 });
                 EntityManager.AddComponentData(rockEntity, new NonUniformScale()
                 {
-                    Value = new float3(scaleWidth, Rock.GetHeightFromHealth(health, health), scaleHeight)
+                    Value = new float3(scaleWidth - 0.5f, Rock.GetHeightFromHealth(health, health), scaleHeight - 0.5f)
                 });
                 EntityManager.SetComponentData(rockEntity, new Translation()
                 {
