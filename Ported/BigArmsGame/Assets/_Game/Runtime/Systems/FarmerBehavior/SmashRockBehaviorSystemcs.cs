@@ -2,6 +2,7 @@
 using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
+using UnityEngine;
 
 [UpdateAfter(typeof(BehaviorSelectorSystem))]
 [UpdateInGroup(typeof(SimulationSystemGroup))]
@@ -29,7 +30,7 @@ public class SmashRockBehaviorSystem : JobComponentSystem
             {
                 if (targetEntityData.Value == Entity.Null)
                 {
-                    var outputPath = new NativeList<int>();
+                    var outputPath = new NativeList<int>(Allocator.Temp);
                     targetEntityData.Value = Pathing.FindNearbyRock(tiles, map.MapSize.x, map.MapSize.y, behavior.PositionX, behavior.PositionY, 20, ref outputPath);
                     if (targetEntityData.Value == null)
                     {
