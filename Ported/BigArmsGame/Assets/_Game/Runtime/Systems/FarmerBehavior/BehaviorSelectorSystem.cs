@@ -17,7 +17,7 @@ public class BehaviorSelectorSystem : JobComponentSystem
     {
         var ecb = m_EndSimulationSystemGroupCommandBuffer.CreateCommandBuffer().ToConcurrent();
 
-        //var random = new Unity.Mathematics.Random((uint)Time.ElapsedTime);
+        var random = new Unity.Mathematics.Random((uint)UnityEngine.Time.realtimeSinceStartup);
 
         var jobHandle = Entities
             .WithAll<FarmerTag>()
