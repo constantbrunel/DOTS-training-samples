@@ -1,5 +1,7 @@
 ﻿using Unity.Entities;
 using Unity.Jobs;
+using Unity.Mathematics;
+using Unity.Transforms;
 
 public class MoneySystem : JobComponentSystem
 {
@@ -9,7 +11,7 @@ public class MoneySystem : JobComponentSystem
     {
         base.OnCreate();
 
-        m_IsSoldQuery = GetEntityQuery(typeof(IsSoldTag));
+        m_IsSoldQuery = GetEntityQuery(typeof(IsSoldData));
         RequireSingletonForUpdate<MoneyData>();
 
         var bankEntity = EntityManager.CreateEntity();
@@ -19,23 +21,29 @@ public class MoneySystem : JobComponentSystem
     protected override JobHandle OnUpdate(JobHandle inputDeps)
     {
         MoneyData bank = GetSingleton<MoneyData>();
+        var farm = GetSingleton<FarmData>();
 
         int soldCount = m_IsSoldQuery.CalculateEntityCount();
 
-        bank.FarmerBank += soldCount;
-        bank.DroneBank += soldCount;
-
-        while (bank.FarmerBank >= bank.FarmerCost)
+        Entities.ForEach((Entity entity, int entityInQueryIndex, IsSoldData data) =>
         {
-            SpawnFarmer();
-            bank.FarmerBank -= bank.FarmerCost;
-        }
+            bank.FarmerBank++;
+            bank.DroneBank++;
 
-        while (bank.DroneBank >= bank.DroneCost)
-        {
-            SpawnDrone();
-            bank.DroneBank -= bank.DroneCost;
-        }
+            if (bank.FarmerBank >= bank.FarmerCost)
+            {
+                Spawn(EntityManager, farm.FarmerEntity, data.StoreX, data.StoreY);
+                UnityEngine.Debug.Log("Farmer Spawned");
+                bank.FarmerBank -= bank.FarmerCost;
+            }
+
+            if (bank.DroneBank >= bank.DroneCost)
+            {
+                Spawn(EntityManager, farm.DroneEntity, data.StoreX, data.StoreY);
+                UnityEngine.Debug.Log("Drone Spawned");
+                bank.DroneBank -= bank.DroneCost;
+            }
+        }).WithStructuralChanges().Run();
 
         SetSingleton(bank);
 
@@ -45,15 +53,12 @@ public class MoneySystem : JobComponentSystem
         return default;
     }
 
-    private void SpawnFarmer()
+    private void Spawn(EntityManager dstManager, Entity prefab, int posX = 0, int posY = 0)
     {
-        // TODO - Spawn farmer
-        UnityEngine.Debug.Log("Farmer Spawned");
-    }
-
-    private void SpawnDrone()
-    {
-        // TODO - Spawn Drone
-        UnityEngine.Debug.Log("Drone Spawned");
+        Entity farmerEntity = dstManager.Instantiate(prefab);
+        EntityManager.SetComponentData(farmerEntity, new Translation()
+        {
+            Value = new float3(posX, 0, posY)
+        });
     }
 }
