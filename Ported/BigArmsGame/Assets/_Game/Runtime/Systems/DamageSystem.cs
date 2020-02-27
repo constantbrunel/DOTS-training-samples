@@ -21,7 +21,8 @@ public class RockDamageSystem : JobComponentSystem
 
     protected override JobHandle OnUpdate(JobHandle inputDeps)
     {
-        var commandBuffer = commandBufferSystem.CreateCommandBuffer().ToConcurrent();
+        var commandBufferConcurrent = commandBufferSystem.CreateCommandBuffer().ToConcurrent();
+        var commandBuffer = commandBufferSystem.CreateCommandBuffer();
 
         var damages = query.ToComponentDataArray<Damage>(Unity.Collections.Allocator.TempJob);
         var jobDeps = Entities.ForEach((Entity entity, int entityInQueryIndex, ref HealthData healthData, ref NonUniformScale scale) =>
@@ -38,12 +39,12 @@ public class RockDamageSystem : JobComponentSystem
 
             if(healthData.Value <= 0)
             {
-                commandBuffer.DestroyEntity(entityInQueryIndex, entity);
+                commandBufferConcurrent.DestroyEntity(entityInQueryIndex, entity);
             }
             
         }).WithDeallocateOnJobCompletion(damages).Schedule(inputDeps);
 
-        EntityManager.DestroyEntity(query);
+        commandBuffer.DestroyEntity(query);
 
         commandBufferSystem.AddJobHandleForProducer(jobDeps);
 
