@@ -22,8 +22,7 @@ public class SmashRockBehaviorSystem : JobComponentSystem
         var commandBuffer = commandBufferSystem.CreateCommandBuffer().ToConcurrent();
 
         var tiles = World.GetExistingSystem<FarmGeneratorSystem>().tiles;
-
-        var map = GetSingleton<FarmData>();
+        var mapSize = World.GetExistingSystem<FarmGeneratorSystem>().MapSize;
 
         var rockTags = GetComponentDataFromEntity<RockTag>(true);
 
@@ -34,7 +33,7 @@ public class SmashRockBehaviorSystem : JobComponentSystem
                 if (targetEntityData.Value == Entity.Null || !rockTags.Exists(targetEntityData.Value))
                 {
                     var outputPath = new NativeList<int>(Allocator.Temp);
-                    Entity newTarget = Pathing.FindNearbyRock(tiles, map.MapSize.x, map.MapSize.y, logicalPosition.PositionX, logicalPosition.PositionY, 20, ref outputPath);
+                    Entity newTarget = Pathing.FindNearbyRock(tiles, mapSize.x, mapSize.y, logicalPosition.PositionX, logicalPosition.PositionY, 20, ref outputPath);
                     UnityEngine.Debug.Log($"old target {targetEntityData.Value.Index}-{targetEntityData.Value.Version} - new target {newTarget.Index}-{newTarget.Version}");
                     targetEntityData.Value = newTarget;
                     if (targetEntityData.Value == null)
@@ -47,7 +46,7 @@ public class SmashRockBehaviorSystem : JobComponentSystem
                         
                         for(int i = 0; i < outputPath.Length; ++i)
                         {
-                            Pathing.Unhash(map.MapSize.x, map.MapSize.y, outputPath[i], out int x, out int y);
+                            Pathing.Unhash(mapSize.x, mapSize.y, outputPath[i], out int x, out int y);
                             buffer.Add(new PathData()
                             {
                                 Position = new int2(x, y)

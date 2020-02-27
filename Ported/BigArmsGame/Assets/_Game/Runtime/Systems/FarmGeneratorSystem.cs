@@ -9,6 +9,7 @@ public class FarmGeneratorSystem : JobComponentSystem
     private EntityQuery m_QueryForFarmNeedingGeneration;
 
     public NativeArray<TileDescriptor> tiles;
+    public int2 MapSize;
 
     protected override void OnCreate()
     {
@@ -31,6 +32,7 @@ public class FarmGeneratorSystem : JobComponentSystem
         int mapY = farm.MapSize.y;
 
         tiles = new NativeArray<TileDescriptor>(mapX * mapY, Allocator.Persistent);
+        MapSize = new int2(mapX, mapY);
 
         // Create default ground
         for (int x = 0; x < mapX; ++x)
