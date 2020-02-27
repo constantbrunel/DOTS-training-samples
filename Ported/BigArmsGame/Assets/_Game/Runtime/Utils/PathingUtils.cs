@@ -52,13 +52,13 @@ public static class Pathing
 		return IsRock(array, mapSizeX, x, y);
 	}
 
-    public static bool IsTillableInZone(NativeArray<TileDescriptor> array, int sizeX, int sizeY, int x, int y)
+    public static bool IsTillableInZone(NativeArray<TileDescriptor> array, int sizeX, int sizeY, int x, int y, RectInt rect)
 	{
 		if (IsTillable(array, sizeX, x, y))
 		{
-			if (x >= 0 && x <= sizeX)
+			if (x >= rect.xMin && x <= rect.xMax)
 			{
-				if (y >= 0 && y <= sizeY)
+				if (y >= rect.yMin && y <= rect.yMax)
 				{
 					return true;
 				}
