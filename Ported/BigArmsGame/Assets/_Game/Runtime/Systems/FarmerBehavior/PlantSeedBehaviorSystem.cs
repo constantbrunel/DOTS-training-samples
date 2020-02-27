@@ -24,7 +24,7 @@ public class PlantSeedBehaviorSystem : JobComponentSystem
         var tiles = World.GetExistingSystem<FarmGeneratorSystem>().tiles;
         var map = GetSingleton<FarmData>();
 
-        var random = new Unity.Mathematics.Random((uint)Time.ElapsedTime);
+        var random = new Unity.Mathematics.Random((uint)UnityEngine.Time.realtimeSinceStartup);
 
         var jobDeps = Entities.WithAll<FarmerTag>().ForEach((Entity entity, int entityInQueryIndex, ref FarmerBehaviorData behavior, ref TargetEntityData targetEntityData, in DynamicBuffer<PathData> pathData, in LogicalPosition logicalPosition) =>
         {

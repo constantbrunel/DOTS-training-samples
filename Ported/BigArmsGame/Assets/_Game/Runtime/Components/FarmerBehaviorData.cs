@@ -12,5 +12,6 @@ public enum FarmerBehavior
 public struct FarmerBehaviorData : IComponentData
 {
     public FarmerBehavior Value;
+    public Entity HeldPlant;
     public bool HasBoughtSeeds;
 }
