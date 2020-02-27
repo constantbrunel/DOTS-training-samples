@@ -48,7 +48,7 @@ public class SmashRockBehaviorSystem : JobComponentSystem
                             buffer.Add(new PathData()
                             {
                                 Position = new int2(x, y)
-                            }); ;
+                            });
                         }
                     }
                     outputPath.Dispose();

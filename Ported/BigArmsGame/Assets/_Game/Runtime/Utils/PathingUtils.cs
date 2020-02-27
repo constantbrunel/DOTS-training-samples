@@ -34,7 +34,7 @@ public static class Pathing
 	{
 		return array[Hash(mapSizeX, x, y)].TileType == TileTypes.Planted;
 	}
-	public static bool IsTillable(NativeList<TileDescriptor> array, int mapSizeX, int x, int y)
+	public static bool IsTillable(NativeArray<TileDescriptor> array, int mapSizeX, int x, int y)
 	{
 		return array[Hash(mapSizeX, x, y)].TileType == TileTypes.None;
 	}
@@ -52,32 +52,57 @@ public static class Pathing
 		return IsRock(array, mapSizeX, x, y);
 	}
 
+    public static bool IsTillableInZone(NativeArray<TileDescriptor> array, int sizeX, int sizeY, int x, int y, RectInt rect)
+	{
+		if (IsTillable(array, sizeX, x, y))
+		{
+			if (x >= rect.xMin && x <= rect.xMax)
+			{
+				if (y >= rect.yMin && y <= rect.yMax)
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	public static Entity FindNearbyHarvestable(NativeArray<TileDescriptor> array, int mapSizeX, int mapSizeY, int x, int y, int range, ref NativeList<int> outputPath)
 	{
-		return FindNearby(array, mapSizeX, mapSizeY, x, y, range, TileTypes.Harvestable, ref outputPath);
+		return FindNearby(array, mapSizeX, mapSizeY, x, y, range, TileTypes.Harvestable, new RectInt(0, 0, mapSizeX, mapSizeY), ref outputPath);
 	}
 
 	public static Entity FindNearbyRock(NativeArray<TileDescriptor> array, int mapSizeX, int mapSizeY, int x, int y, int range, ref NativeList<int> outputPath)
 	{
-		return FindNearby(array, mapSizeX, mapSizeY, x, y, range, TileTypes.Rock, ref outputPath);
+		return FindNearby(array, mapSizeX, mapSizeY, x, y, range, TileTypes.Rock, new RectInt(0, 0, mapSizeX, mapSizeY), ref outputPath);
 	}
 
 	public static Entity FindNearbyStore(NativeArray<TileDescriptor> array, int mapSizeX, int mapSizeY, int x, int y, int range, ref NativeList<int> outputPath)
 	{
-		return FindNearby(array, mapSizeX, mapSizeY, x, y, range, TileTypes.Store, ref outputPath);
+		return FindNearby(array, mapSizeX, mapSizeY, x, y, range, TileTypes.Store, new RectInt(0, 0, mapSizeX, mapSizeY), ref outputPath);
 	}
 
-	public static Entity FindNearbyTilled(NativeArray<TileDescriptor> array, int mapSizeX, int mapSizeY, int x, int y, int range, ref NativeList<int> outputPath)
+    public static bool FindNearbyGound(NativeArray<TileDescriptor> array, int mapSizeX, int mapSizeY, int x, int y, int range, ref NativeList<int> outputPath)
+    {
+		return IsFindNearby(array, mapSizeX, mapSizeY, x, y, range, TileTypes.None, new RectInt(0, 0, mapSizeX, mapSizeY), ref outputPath);
+	}
+
+    public static bool FindNearbyGroundInZone(NativeArray<TileDescriptor> array, int mapSizeX, int mapSizeY, int x, int y, int range, RectInt zone, ref NativeList<int> outputPath)
 	{
-		return FindNearby(array, mapSizeX, mapSizeY, x, y, range, TileTypes.Tilled, ref outputPath);
+		return IsFindNearby(array, mapSizeX, mapSizeY, x, y, range, TileTypes.None, zone, ref outputPath);
+	}
+
+	public static bool FindNearbyTilled(NativeArray<TileDescriptor> array, int mapSizeX, int mapSizeY, int x, int y, int range, ref NativeList<int> outputPath)
+	{
+		return IsFindNearby(array, mapSizeX, mapSizeY, x, y, range, TileTypes.Tilled, new RectInt(0, 0, mapSizeX, mapSizeY), ref outputPath);
 	}
 
 	public static Entity FindNearbyPlanted(NativeArray<TileDescriptor> array, int mapSizeX, int mapSizeY, int x, int y, int range, ref NativeList<int> outputPath)
 	{
-		return FindNearby(array, mapSizeX, mapSizeY, x, y, range, TileTypes.Planted, ref outputPath);
+		return FindNearby(array, mapSizeX, mapSizeY, x, y, range, TileTypes.Planted, new RectInt(0, 0, mapSizeX, mapSizeY),ref outputPath);
 	}
 
-	public static Entity FindNearby(NativeArray<TileDescriptor> array, int mapSizeX, int mapSizeY, int x, int y, int range, TileTypes type, ref NativeList<int> outputPath)
+	public static Entity FindNearby(NativeArray<TileDescriptor> array, int mapSizeX, int mapSizeY, int x, int y, int range, TileTypes type, RectInt requiredZone, ref NativeList<int> outputPath)
 	{
 		NativeArray<int> visitedTiles = new NativeArray<int>(mapSizeX * mapSizeY, Allocator.Temp);
 		NativeList<int> activeTiles = new NativeList<int>(Allocator.Temp);
@@ -85,13 +110,37 @@ public static class Pathing
 		NativeList<int> outputTiles = new NativeList<int>(Allocator.Temp);
 		var result = Entity.Null;
 
-		int rockPosHash = SearchForOne(array, mapSizeX, mapSizeY, x, y, range, type, ref visitedTiles, ref activeTiles, ref nextTiles, ref outputTiles);
+		int rockPosHash = SearchForOne(array, mapSizeX, mapSizeY, x, y, range, type, requiredZone, ref visitedTiles, ref activeTiles, ref nextTiles, ref outputTiles);
 		if (rockPosHash != -1)
 		{
 			int rockX, rockY;
 			Unhash(mapSizeX, mapSizeY, rockPosHash, out rockX, out rockY);
 			AssignLatestPath(mapSizeX, mapSizeY, rockX, rockY, ref visitedTiles, ref outputPath);
 			result = array[rockPosHash].Entity;
+		}
+
+		visitedTiles.Dispose();
+		activeTiles.Dispose();
+		nextTiles.Dispose();
+		outputTiles.Dispose();
+		return result;
+	}
+
+	public static bool IsFindNearby(NativeArray<TileDescriptor> array, int mapSizeX, int mapSizeY, int x, int y, int range, TileTypes type, RectInt requiredZone, ref NativeList<int> outputPath)
+	{
+		NativeArray<int> visitedTiles = new NativeArray<int>(mapSizeX * mapSizeY, Allocator.Temp);
+		NativeList<int> activeTiles = new NativeList<int>(Allocator.Temp);
+		NativeList<int> nextTiles = new NativeList<int>(Allocator.Temp);
+		NativeList<int> outputTiles = new NativeList<int>(Allocator.Temp);
+		var result = false;
+
+		int rockPosHash = SearchForOne(array, mapSizeX, mapSizeY, x, y, range, type, requiredZone, ref visitedTiles, ref activeTiles, ref nextTiles, ref outputTiles);
+		if (rockPosHash != -1)
+		{
+			int rockX, rockY;
+			Unhash(mapSizeX, mapSizeY, rockPosHash, out rockX, out rockY);
+			AssignLatestPath(mapSizeX, mapSizeY, rockX, rockY, ref visitedTiles, ref outputPath);
+			result = true;
 		}
 
 		visitedTiles.Dispose();
@@ -110,6 +159,7 @@ public static class Pathing
         int startY,
         int range,
         TileTypes tileType,
+        RectInt requiredZone,
         ref NativeArray<int> visitedTiles,
 	    ref NativeList<int> activeTiles,
 	    ref NativeList<int> nextTiles,
@@ -124,6 +174,7 @@ public static class Pathing
             startY,
             range,
             tileType,
+            requiredZone,
             ref visitedTiles,
             ref activeTiles,
             ref nextTiles,
@@ -147,6 +198,7 @@ public static class Pathing
         int startY,
         int range,
         TileTypes tileType,
+        RectInt requiredZone,
 		ref NativeArray<int> visitedTiles,
 		ref NativeList<int> activeTiles,
 		ref NativeList<int> nextTiles,
@@ -201,9 +253,9 @@ public static class Pathing
 							visitedTiles[Hash(mapSizeX, x2, y2)] = steps;
 							nextTiles.Add(hash);
 						}
-						if (x2 >= 0 && x2 <= mapSizeX)
+						if (x2 >= requiredZone.xMin && x2 <= requiredZone.xMax)
 						{
-							if (y2 >= 0 && y2 <= mapSizeY)
+							if (y2 >= requiredZone.yMin && y2 <= requiredZone.xMax)
 							{
 								if (array[Hash(mapSizeX, x2, y2)].TileType == tileType)
 								{
