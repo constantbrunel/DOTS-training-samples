@@ -14,6 +14,7 @@ public class TileModifierSystem : JobComponentSystem
 
         Entities.ForEach((in TileModifierData modifierData) =>
         {
+            UnityEngine.Debug.Log($"TileModifier ({modifierData.PosX},{modifierData.PosY} - new type {modifierData.NextType})");
             var tile = tiles[Pathing.Hash(map.MapSize.x, modifierData.PosX, modifierData.PosY)];
             switch (tile.TileType)
             {
@@ -21,7 +22,7 @@ public class TileModifierSystem : JobComponentSystem
                     {
                         var translation = GetComponentDataFromEntity<Translation>(true)[tile.Entity];
                         var scale = GetComponentDataFromEntity<NonUniformScale>(true)[tile.Entity];
-                        int2 position = new int2((int)(translation.Value.x - (scale.Value.x + 1)/ 2f), (int)(translation.Value.z - (scale.Value.z + 1)/ 2f));
+                        int2 position = new int2((int)(translation.Value.x + 0.5f - (scale.Value.x)/ 2f), (int)(translation.Value.z + 0.5f - (scale.Value.z)/ 2f));
                         int sizeX = (int)scale.Value.x + 1;
                         int sizeY = (int)scale.Value.z + 1;
                         for(int i = 0; i < sizeX; ++i)

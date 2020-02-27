@@ -22,16 +22,21 @@ public class SmashRockBehaviorSystem : JobComponentSystem
         var commandBuffer = commandBufferSystem.CreateCommandBuffer().ToConcurrent();
 
         var tiles = World.GetExistingSystem<FarmGeneratorSystem>().tiles;
+
         var map = GetSingleton<FarmData>();
 
-        var jobDeps = Entities.WithAll<FarmerTag>().ForEach((Entity entity, int entityInQueryIndex, ref FarmerBehaviorData behavior, ref TargetEntityData targetEntityData, in DynamicBuffer<PathData> pathData, in LogicalPosition logicalPosition) =>
+        var rockTags = GetComponentDataFromEntity<RockTag>(true);
+
+        var jobDeps = Entities.WithAll<FarmerTag>().WithReadOnly(rockTags).ForEach((Entity entity, int entityInQueryIndex, ref FarmerBehaviorData behavior, ref TargetEntityData targetEntityData, in DynamicBuffer<PathData> pathData, in LogicalPosition logicalPosition) =>
         {
             if (behavior.Value == FarmerBehavior.SmashRock)
             {
-                if (targetEntityData.Value == Entity.Null)
+                if (targetEntityData.Value == Entity.Null || !rockTags.Exists(targetEntityData.Value))
                 {
                     var outputPath = new NativeList<int>(Allocator.Temp);
-                    targetEntityData.Value = Pathing.FindNearbyRock(tiles, map.MapSize.x, map.MapSize.y, logicalPosition.PositionX, logicalPosition.PositionY, 20, ref outputPath);
+                    Entity newTarget = Pathing.FindNearbyRock(tiles, map.MapSize.x, map.MapSize.y, logicalPosition.PositionX, logicalPosition.PositionY, 20, ref outputPath);
+                    UnityEngine.Debug.Log($"old target {targetEntityData.Value.Index}-{targetEntityData.Value.Version} - new target {newTarget.Index}-{newTarget.Version}");
+                    targetEntityData.Value = newTarget;
                     if (targetEntityData.Value == null)
                     {
                         behavior.Value = FarmerBehavior.None;
