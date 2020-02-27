@@ -42,11 +42,11 @@ public class SmashRockBehaviorSystem : JobComponentSystem
                         
                         for(int i = 0; i < outputPath.Length; ++i)
                         {
-                            var path = outputPath[i];
+                            Pathing.Unhash(map.MapSize.x, map.MapSize.y, outputPath[i], out int x, out int y);
                             buffer.Add(new PathData()
                             {
-                                Position = path
-                            });
+                                Position = new int2(x, y)
+                            }); ;
                         }
                     }
                     outputPath.Dispose();
