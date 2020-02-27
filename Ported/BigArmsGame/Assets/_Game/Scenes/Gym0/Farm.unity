@@ -168,7 +168,9 @@ MonoBehaviour:
   StoreCount: 10
   RockSpawnAttempts: 50
   InitialFarmerCount: 2
-  TileGameObject: {fileID: 1692649318389262669, guid: 431eacc767b73493cb284cf8c203c4ed,
+  DefaultTileGameObject: {fileID: 1692649318389262669, guid: 431eacc767b73493cb284cf8c203c4ed,
+    type: 3}
+  TiledTileGameObject: {fileID: 1692649318389262669, guid: 8574daa3a61194ff99b21dce50149b61,
     type: 3}
   StoreGameObject: {fileID: 1013783550365935148, guid: ce862d438ae104b7888bed54740a1eb6,
     type: 3}

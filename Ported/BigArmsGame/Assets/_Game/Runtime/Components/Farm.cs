@@ -11,7 +11,8 @@ public class Farm : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReference
 	public int RockSpawnAttempts;
     public int InitialFarmerCount;
 
-    public GameObject TileGameObject;
+    public GameObject DefaultTileGameObject;
+    public GameObject TiledTileGameObject;
     public GameObject StoreGameObject;
     public GameObject RockGameObject;
     public GameObject FarmerGameObject;
@@ -25,7 +26,8 @@ public class Farm : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReference
             StoreCount = StoreCount,
             RockSpawnAttempts = RockSpawnAttempts,
             InitialFarmerCount = InitialFarmerCount,
-            TileEntity = conversionSystem.GetPrimaryEntity(TileGameObject),
+            DefaultTileEntity = conversionSystem.GetPrimaryEntity(DefaultTileGameObject),
+            TiledTileEntity = conversionSystem.GetPrimaryEntity(TiledTileGameObject),
             StoreEntity = conversionSystem.GetPrimaryEntity(StoreGameObject),
             RockEntity = conversionSystem.GetPrimaryEntity(RockGameObject),
             FarmerEntity = conversionSystem.GetPrimaryEntity(FarmerGameObject),
@@ -36,7 +38,8 @@ public class Farm : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReference
 
     public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
     {
-        referencedPrefabs.Add(TileGameObject);
+        referencedPrefabs.Add(DefaultTileGameObject);
+        referencedPrefabs.Add(TiledTileGameObject);
         referencedPrefabs.Add(StoreGameObject);
         referencedPrefabs.Add(RockGameObject);
         referencedPrefabs.Add(FarmerGameObject);
@@ -51,7 +54,8 @@ public struct FarmData : IComponentData
     public int RockSpawnAttempts;
     public int InitialFarmerCount;
 
-    public Entity TileEntity;
+    public Entity DefaultTileEntity;
+    public Entity TiledTileEntity;
     public Entity StoreEntity;
     public Entity RockEntity;
     public Entity FarmerEntity;

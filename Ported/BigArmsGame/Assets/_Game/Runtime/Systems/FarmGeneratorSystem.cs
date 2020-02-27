@@ -44,7 +44,7 @@ public class FarmGeneratorSystem : JobComponentSystem
                 };
             }
         }
-        Entity tileEntity = EntityManager.Instantiate(farm.TileEntity);
+        Entity tileEntity = EntityManager.Instantiate(farm.DefaultTileEntity);
         EntityManager.SetComponentData(tileEntity, new Translation
         {
             Value = new float3(mapX/2 - 0.5f, 0, mapY/2 - 0.5f)
