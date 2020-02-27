@@ -5,16 +5,11 @@ using Unity.Entities;
 
 public class Rock : MonoBehaviour, IConvertGameObjectToEntity
 {
-    public int Health;
-
     public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
     {
-        dstManager.AddComponentData(entity, new HealthData()
-        {
-            CurrentValue = Health,
-            MaxValue = Health
-        });
+        dstManager.AddComponentData(entity, new HealthData());
         dstManager.AddComponent<LogicalPosition>(entity);
+        dstManager.AddComponent<RockTag>(entity);
     }
 
     public static float GetHeightFromHealth(float currentHealth, float maxHealth)
@@ -22,3 +17,6 @@ public class Rock : MonoBehaviour, IConvertGameObjectToEntity
         return currentHealth / maxHealth * maxHealth / 100;
     }
 }
+
+public struct RockTag : IComponentData
+{}
