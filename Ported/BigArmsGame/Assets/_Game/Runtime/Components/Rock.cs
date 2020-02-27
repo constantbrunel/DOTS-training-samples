@@ -5,14 +5,13 @@ using Unity.Entities;
 
 public class Rock : MonoBehaviour, IConvertGameObjectToEntity
 {
-    public int Health;
-
     public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
     {
-        dstManager.AddComponentData(entity, new HealthData()
-        { 
-            Value = Health
-        });
+        dstManager.AddComponent<HealthData>(entity);
         dstManager.AddComponent<LogicalPosition>(entity);
+        dstManager.AddComponent<RockTag>(entity);
     }
 }
+
+public struct RockTag : IComponentData
+{}

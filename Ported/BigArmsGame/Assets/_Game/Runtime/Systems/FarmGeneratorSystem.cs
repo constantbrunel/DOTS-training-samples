@@ -84,15 +84,15 @@ public class FarmGeneratorSystem : JobComponentSystem
         {
             int width = UnityEngine.Random.Range(0, 4);
             int height = UnityEngine.Random.Range(0, 4);
-            int rockX = UnityEngine.Random.Range(0, mapX - width);
-            int rockY = UnityEngine.Random.Range(0, mapY - height);
+            int rockX = UnityEngine.Random.Range(0, mapX - width - 1);
+            int rockY = UnityEngine.Random.Range(0, mapY - height - 1);
 
             bool blocked = false;
             for (int x = rockX; x <= rockX + width; x++)
             {
                 for (int y = rockY; y <= rockY + height; y++)
                 {
-                    if (tiles[x + mapX * y].TileType == TileTypes.Rock|| tiles[x + mapX * y].TileType == TileTypes.Store)
+                    if (tiles[x + (mapX * y)].TileType == TileTypes.Rock || tiles[x + (mapX * y)].TileType == TileTypes.Store)
                     {
                         blocked = true;
                         break;
@@ -112,7 +112,7 @@ public class FarmGeneratorSystem : JobComponentSystem
                 });
                 EntityManager.SetComponentData(rockEntity, new Translation()
                 {
-                    Value = new float3((float)rockX - 0.5f + (float)scaleWidth / 2.0f, 0, (float)rockY - 0.5f + (float)scaleWidth / 2.0f)
+                    Value = new float3((float)rockX - 0.5f + ((float)scaleWidth / 2.0f), 0, (float)rockY - 0.5f + ((float)scaleHeight / 2.0f))
                 });
 
                 for (int x = rockX; x <= rockX + width; x++)
@@ -136,7 +136,7 @@ public class FarmGeneratorSystem : JobComponentSystem
             int y = UnityEngine.Random.Range(0, mapY);
 
             // Avoid spawning into rocks
-            if(tiles[x + y * mapY].TileType == TileTypes.Rock)
+            if(tiles[x + y * mapX].TileType == TileTypes.Rock)
             {
                 continue;
             }
