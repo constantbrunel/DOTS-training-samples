@@ -33,9 +33,7 @@ public class SmashRockBehaviorSystem : JobComponentSystem
                 if (targetEntityData.Value == Entity.Null || !rockTags.Exists(targetEntityData.Value))
                 {
                     var outputPath = new NativeList<int>(Allocator.Temp);
-                    Entity newTarget = Pathing.FindNearbyRock(tiles, mapSize.x, mapSize.y, logicalPosition.PositionX, logicalPosition.PositionY, 20, ref outputPath);
-                    UnityEngine.Debug.Log($"old target {targetEntityData.Value.Index}-{targetEntityData.Value.Version} - new target {newTarget.Index}-{newTarget.Version}");
-                    targetEntityData.Value = newTarget;
+                    targetEntityData.Value = Pathing.FindNearbyRock(tiles, mapSize.x, mapSize.y, logicalPosition.PositionX, logicalPosition.PositionY, 20, ref outputPath);
                     if (targetEntityData.Value == null)
                     {
                         behavior.Value = FarmerBehavior.None;
