@@ -24,9 +24,9 @@ public class PlantSeedBehaviorSystem : JobComponentSystem
         var tiles = World.GetExistingSystem<FarmGeneratorSystem>().tiles;
         var map = GetSingleton<FarmData>();
 
-        var random = new Unity.Mathematics.Random((uint)UnityEngine.Time.realtimeSinceStartup);
+        var random = new Unity.Mathematics.Random((uint)UnityEngine.Random.Range(0, 999999999));
 
-        var jobDeps = Entities.WithAll<FarmerTag>().ForEach((Entity entity, int entityInQueryIndex, ref FarmerBehaviorData behavior, ref TargetEntityData targetEntityData, in DynamicBuffer<PathData> pathData, in LogicalPosition logicalPosition) =>
+        var jobDeps = Entities.WithAll<FarmerTag>().ForEach((Entity entity, int entityInQueryIndex, ref FarmerBehaviorData behavior, ref TargetEntityData targetEntityData, ref DynamicBuffer<PathData> pathData, in LogicalPosition logicalPosition) =>
         {
             if (behavior.Value == FarmerBehavior.PlantSeed)
             {
@@ -65,7 +65,7 @@ public class PlantSeedBehaviorSystem : JobComponentSystem
                     pathData.Clear();
 
                     var modifier = commandBuffer.CreateEntity(entityInQueryIndex);
-                    commandBuffer.AddComponent(entityInQueryIndex, modifier, new TileModifierData() { PosX = logicalPosition.PositionX, PosY = logicalPosition.PositionY, NextType = TileTypes.None });
+                    commandBuffer.AddComponent(entityInQueryIndex, modifier, new TileModifierData() { PosX = logicalPosition.PositionX, PosY = logicalPosition.PositionY, NextType = TileTypes.Planted });
                 }
                 else if (pathData.Length == 0)
                 {

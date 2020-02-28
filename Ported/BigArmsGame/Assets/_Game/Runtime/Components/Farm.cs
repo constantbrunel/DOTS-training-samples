@@ -10,6 +10,7 @@ public class Farm : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReference
 	public int StoreCount;
 	public int RockSpawnAttempts;
     public int InitialFarmerCount;
+    public int InitialTilledTileCount;
 
     public GameObject DefaultTileGameObject;
     public GameObject TiledTileGameObject;
@@ -26,6 +27,7 @@ public class Farm : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReference
             StoreCount = StoreCount,
             RockSpawnAttempts = RockSpawnAttempts,
             InitialFarmerCount = InitialFarmerCount,
+            InitialTilledTileCount = InitialTilledTileCount,
             DefaultTileEntity = conversionSystem.GetPrimaryEntity(DefaultTileGameObject),
             TiledTileEntity = conversionSystem.GetPrimaryEntity(TiledTileGameObject),
             StoreEntity = conversionSystem.GetPrimaryEntity(StoreGameObject),
@@ -53,6 +55,7 @@ public struct FarmData : IComponentData
     public int StoreCount;
     public int RockSpawnAttempts;
     public int InitialFarmerCount;
+    public int InitialTilledTileCount;
 
     public Entity DefaultTileEntity;
     public Entity TiledTileEntity;
