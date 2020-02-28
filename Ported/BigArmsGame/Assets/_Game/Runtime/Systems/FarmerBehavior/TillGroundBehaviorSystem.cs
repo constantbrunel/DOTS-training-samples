@@ -40,8 +40,13 @@ public class TillGroundBehaviorSystem : JobComponentSystem
         {
             if (behavior.Value == FarmerBehavior.TillGround)
             {
-                if (targetEntityData.Value == Entity.Null || !tillData.Exists(targetEntityData.Value))
+                // Try to assign target!
+                if (targetEntityData.Value == Entity.Null)
                 {
+                    // First clear path
+                    pathData.Clear();
+                    UnityEngine.Debug.Log("Looking for a new zone to tile");
+
                     int width = random.NextInt(1, 8);
                     int height = random.NextInt(1, 8);
                     int minX = logicalPosition.PositionX + random.NextInt(-10, 10 - width);
@@ -70,10 +75,37 @@ public class TillGroundBehaviorSystem : JobComponentSystem
                     }
                     if (blocked == false)
                     {
-                        var target = commandBuffer.CreateEntity(entityInQueryIndex);
-                        commandBuffer.AddComponent(entityInQueryIndex, target, new TillTargetData() { PosX = minX, PosY = minY, SizeX = width, SizeY = height });
-                        commandBuffer.SetComponent(entityInQueryIndex, entity, new TargetEntityData() { Value = target });
-                        Debug.Log($"Target aquired - PosX = {minX}, PosY = {minY}, SizeX = {width}, SizeY = {height}");
+                        // Get new path
+                        Debug.Log("Looking for a path");
+                        var outputPath = new NativeList<int>(Allocator.Temp);
+                        Pathing.FindNearbyGroundInZone(tiles, map.MapSize.x, map.MapSize.y, logicalPosition.PositionX, logicalPosition.PositionY, 25, new RectInt(minX, minY, width, height), ref outputPath);
+                        if (outputPath.Length == 0)
+                        {
+                            Debug.Log("No target aquired");
+                            if (random.NextFloat(1) < .2f)
+                            {
+                                Debug.Log("Quiting");
+                                behavior.Value = FarmerBehavior.None;
+                            }
+                        }
+                        else
+                        {
+                            for (int i = 0; i < outputPath.Length; ++i)
+                            {
+                                Pathing.Unhash(map.MapSize.x, map.MapSize.y, outputPath[i], out int x, out int y);
+                                pathData.Add(new PathData()
+                                {
+                                    Position = new int2(x, y)
+                                });
+                            }
+
+                            // Create target!
+                            var target = commandBuffer.CreateEntity(entityInQueryIndex);
+                            commandBuffer.AddComponent(entityInQueryIndex, target, new TillTargetData() { PosX = minX, PosY = minY, SizeX = width, SizeY = height });
+                            commandBuffer.SetComponent(entityInQueryIndex, entity, new TargetEntityData() { Value = target });
+                            Debug.Log($"Target aquired - PosX = {minX}, PosY = {minY}, SizeX = {width}, SizeY = {height}");
+                        }
+                        outputPath.Dispose();
                     }
                     else
                     {
@@ -88,73 +120,46 @@ public class TillGroundBehaviorSystem : JobComponentSystem
                 else
                 {
                     var data = tillData[targetEntityData.Value];
-                    if (Pathing.IsTillableInZone(tiles, map.MapSize.x, map.MapSize.y, logicalPosition.PositionX, logicalPosition.PositionY, new RectInt(data.PosX, data.PosY, data.SizeX, data.SizeY))) 
+                    if (Pathing.IsTillableInZone(tiles, map.MapSize.x, map.MapSize.y, logicalPosition.PositionX, logicalPosition.PositionY, new RectInt(data.PosX, data.PosY, data.SizeX, data.SizeY)))
                     {
-                        Debug.Log("Tile");
                         pathData.Clear();
                         var entModifier = commandBuffer.CreateEntity(entityInQueryIndex);
                         commandBuffer.AddComponent(entityInQueryIndex, entModifier, new TileModifierData() { PosX = logicalPosition.PositionX, PosY = logicalPosition.PositionY, NextType = TileTypes.Tilled });
-                    }
-                    else
-                    {
-                        if (pathData.Length == 0)
+
+                        // Till and then find new path to next zone
+                        var outputPath = new NativeList<int>(Allocator.Temp);
+                        Pathing.FindNearbyGroundInZone(tiles, map.MapSize.x, map.MapSize.y, logicalPosition.PositionX, logicalPosition.PositionY, 999, new RectInt(data.PosX, data.PosY, data.SizeX, data.SizeY), ref outputPath);
+
+                        Debug.Log($"Tile ({logicalPosition.PositionX},{logicalPosition.PositionY})"); 
+
+
+                        if (outputPath.Length == 0)
                         {
-                            Debug.Log("Looking for a path");
-                            var outputPath = new NativeList<int>(Allocator.Temp);
-                            Pathing.FindNearbyGroundInZone(tiles, map.MapSize.x, map.MapSize.y, logicalPosition.PositionX, logicalPosition.PositionY, 25, new RectInt(data.PosX, data.PosY, data.SizeX, data.SizeY), ref outputPath);
-                            if (outputPath.Length == 0)
+                            Debug.Log("Action done");
+                            commandBuffer.DestroyEntity(entityInQueryIndex, targetEntityData.Value);
+                            targetEntityData.Value = Entity.Null;
+                            if (random.NextFloat(1) < .1f)
                             {
-                                Debug.Log("No path found quiting");
+                                Debug.Log("Quiting action");
                                 behavior.Value = FarmerBehavior.None;
                             }
-                            else
-                            {
-                                for (int i = 0; i < outputPath.Length; ++i)
-                                {
-                                    Pathing.Unhash(map.MapSize.x, map.MapSize.y, outputPath[i], out int x, out int y);
-                                    Debug.Log($"New path spot {x}/{y}");
-                                    pathData.Add(new PathData()
-                                    {
-                                        Position = new int2(x, y)
-                                    });
-                                }
-                            }
-                            outputPath.Dispose();
-                        }
-                    }
-
-                    if (pathData.Length == 0)
-                    {
-                        Debug.Log("Action done");
-                        if (random.NextFloat(1) < .1f)
-                        {
-                            Debug.Log("Quiting action");
-                            behavior.Value = FarmerBehavior.None;
                         }
                         else
                         {
-                            Debug.Log("Finding new temporary path");
-                            var outputPath = new NativeList<int>(Allocator.Temp);
-                            Pathing.FindNearbyTilled(tiles, map.MapSize.x, map.MapSize.y, logicalPosition.PositionX, logicalPosition.PositionY, 25, ref outputPath);
-                            if (outputPath.Length == 0)
-                            {
-                                behavior.Value = FarmerBehavior.None;
-                            }
-                            else
-                            {
-                                var buffer = commandBuffer.SetBuffer<PathData>(entityInQueryIndex, entity);
 
-                                for (int i = 0; i < outputPath.Length; ++i)
+                            Pathing.Unhash(map.MapSize.x, map.MapSize.y, outputPath[0], out var xa, out var ya);
+                            Debug.Log($" Actual position ({logicalPosition.PositionX},{logicalPosition.PositionY}) -> New Tile to till ({xa},{ya})");
+
+                            for (int i = 0; i < outputPath.Length; ++i)
+                            {
+                                Pathing.Unhash(map.MapSize.x, map.MapSize.y, outputPath[i], out int x, out int y);
+                                pathData.Add(new PathData()
                                 {
-                                    Pathing.Unhash(map.MapSize.x, map.MapSize.y, outputPath[i], out int x, out int y);
-                                    buffer.Add(new PathData()
-                                    {
-                                        Position = new int2(x, y)
-                                    });
-                                }
+                                    Position = new int2(x, y)
+                                });
                             }
-                            outputPath.Dispose();
                         }
+                        outputPath.Dispose();
                     }
                 }
             }

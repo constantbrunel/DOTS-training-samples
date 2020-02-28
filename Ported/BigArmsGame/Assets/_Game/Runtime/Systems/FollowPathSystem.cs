@@ -27,19 +27,11 @@ public class FollowPathSystem : JobComponentSystem
 				}
 				else
 				{
-					if (Pathing.IsBlocked(tiles, mapSize.x, mapSize.y, nextTile.x, nextTile.y) == false)
-					{
-						float offset = .5f;
-						if (Pathing.IsPlant(tiles, mapSize.x, nextTile.x, nextTile.y))
-						{
-							offset = .01f;
-						}
-						Vector2 targetPos = new Vector2(nextTile.x + offset, nextTile.y + offset);
-						Vector2 position = new Vector2(trans.Value.x, trans.Value.z);
-						position = Vector2.MoveTowards(position, targetPos, m_Walkspeed * deltaTime);
-						trans.Value.x = position.x;
-						trans.Value.z = position.y;
-					}
+					Vector2 targetPos = new Vector2(nextTile.x, nextTile.y);
+					Vector2 position = new Vector2(trans.Value.x, trans.Value.z);
+					position = Vector2.MoveTowards(position, targetPos, m_Walkspeed * deltaTime);
+					trans.Value.x = position.x;
+					trans.Value.z = position.y;
 				}
 			}
 		}).Schedule(inputDeps);

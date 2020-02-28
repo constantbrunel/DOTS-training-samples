@@ -164,10 +164,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 796c7ed783c4848099327c5aa129be8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MapSize: {x: 60, y: 60}
-  StoreCount: 10
-  RockSpawnAttempts: 50
-  InitialFarmerCount: 2
+  MapSize: {x: 10, y: 10}
+  StoreCount: 1
+  RockSpawnAttempts: 0
+  InitialFarmerCount: 1
   InitialTilledTileCount: 0
   DefaultTileGameObject: {fileID: 1692649318389262669, guid: 431eacc767b73493cb284cf8c203c4ed,
     type: 3}
@@ -178,10 +178,6 @@ MonoBehaviour:
   RockGameObject: {fileID: 5870067115297735362, guid: ddf6ff251f5604aef9e7fb8cd475bd92,
     type: 3}
   PlantGameObject1: {fileID: 835675283445779902, guid: 01e623fd129dd41aaa13189973bacbfc,
-    type: 3}
-  PlantGameObject2: {fileID: 835675283445779902, guid: fd756e8754bf6425682dda4fef46eaf1,
-    type: 3}
-  PlantGameObject3: {fileID: 835675283445779902, guid: 6fbd98be2fd6b4a8b880b8f22ffa3d6b,
     type: 3}
   FarmerGameObject: {fileID: 5538822932208375368, guid: 2a4553302a58048c79a939aeb2104f6a,
     type: 3}
