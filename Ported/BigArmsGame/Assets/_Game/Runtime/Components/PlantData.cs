@@ -7,13 +7,12 @@ public class PlantData : MonoBehaviour, IConvertGameObjectToEntity
     {
         dstManager.AddComponentData(entity, new PlantDataComp { GrowDuration = Random.Range(2, 10) });
         dstManager.AddComponent<IsGrowingTag>(entity);
+        dstManager.AddComponent<LogicalPosition>(entity);
     }
 }
 
 public struct PlantDataComp : IComponentData
 {
-    public int PositionX;
-    public int PositionY;
     public float Growth;
     public int GrowDuration;
 }
