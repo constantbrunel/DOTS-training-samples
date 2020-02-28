@@ -178,6 +178,8 @@ MonoBehaviour:
     type: 3}
   PlantGameObject1: {fileID: 835675283445779902, guid: 01e623fd129dd41aaa13189973bacbfc,
     type: 3}
+  PlantGameObject2: {fileID: 835675283445779902, guid: fd756e8754bf6425682dda4fef46eaf1,
+    type: 3}
   FarmerGameObject: {fileID: 5538822932208375368, guid: 2a4553302a58048c79a939aeb2104f6a,
     type: 3}
   DroneGameObject: {fileID: 4977014802067595807, guid: e662ad97d0ace4e14b93eb9e015d3803,

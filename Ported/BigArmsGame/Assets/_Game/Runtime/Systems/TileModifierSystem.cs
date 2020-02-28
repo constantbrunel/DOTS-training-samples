@@ -22,6 +22,7 @@ public class TileModifierSystem : JobComponentSystem
         var mapSize = World.GetExistingSystem<FarmGeneratorSystem>().MapSize;
 
         FarmData farmData = GetSingleton<FarmData>();
+        var random = new Unity.Mathematics.Random((uint)UnityEngine.Random.Range(0, 9999));
 
         // Debug.Log("Print map before");
         // PrintMapUtils.PrintMap(tiles, mapSize.x, mapSize.y);
@@ -69,7 +70,16 @@ public class TileModifierSystem : JobComponentSystem
                     }
                 case TileTypes.Tilled:
                     {
-                        Entity plantEntity = EntityManager.Instantiate(farmData.PlantEntity1);
+                        Entity plantEntity;
+
+                        if(random.NextInt(0,2) == 0)
+                        {
+                            plantEntity = EntityManager.Instantiate(farmData.PlantEntity1);
+                        }
+                        else
+                        {
+                            plantEntity = EntityManager.Instantiate(farmData.PlantEntity2);
+                        }
                         EntityManager.SetComponentData(plantEntity, new Translation() { Value = new float3(modifierData.PosX, 0f, modifierData.PosY) });
                         tiles[Pathing.Hash(mapSize.x, modifierData.PosX, modifierData.PosY)] = new TileDescriptor() { TileType = modifierData.NextType, Entity = plantEntity };
                         break;
