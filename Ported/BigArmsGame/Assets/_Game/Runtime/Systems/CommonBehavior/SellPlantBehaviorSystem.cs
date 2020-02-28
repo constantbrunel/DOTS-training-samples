@@ -40,7 +40,7 @@ public class SellPlantBehaviorSystem : JobComponentSystem
             if(target.Value == Entity.Null && behaviorData.HeldPlant == Entity.Null)
             {
                 // Find near harvestable to continue
-                NativeList<int> outputPath = new NativeList<int>(Allocator.TempJob);
+                NativeList<int> outputPath = new NativeList<int>(Allocator.Temp);
                 var result = Pathing.FindNearbyHarvestable(array, mapSize.x, mapSize.y, pos.PositionX, pos.PositionY, 20, ref outputPath);
 
                 if (result != Entity.Null && !allReservedPlants.Exists(result))
@@ -58,6 +58,7 @@ public class SellPlantBehaviorSystem : JobComponentSystem
                 {
                     behaviorData.Value = FarmerBehavior.None;
                 }
+                outputPath.Dispose();
                 return;
             }
 

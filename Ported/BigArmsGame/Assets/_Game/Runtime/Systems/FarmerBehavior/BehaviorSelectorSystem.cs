@@ -17,7 +17,7 @@ public class BehaviorSelectorSystem : JobComponentSystem
     {
         var ecb = m_EndSimulationSystemGroupCommandBuffer.CreateCommandBuffer().ToConcurrent();
 
-        var random = new Unity.Mathematics.Random((uint)UnityEngine.Time.realtimeSinceStartup);
+        var random = new Unity.Mathematics.Random((uint)UnityEngine.Random.Range(0, 9999));
 
         var jobHandle = Entities
             .WithAll<FarmerTag>()
@@ -29,21 +29,27 @@ public class BehaviorSelectorSystem : JobComponentSystem
                     pathBuffer.Clear();
 
                     // Select a behavior
-                    int rand = 2;// random.NextInt(0, 4);
+                    int rand = random.NextInt(0, 5);
+                    UnityEngine.Debug.Log($"{rand}");
+
                     if (rand == 0)
                     {
+                        UnityEngine.Debug.Log("Is now Smashing");
                         ecb.SetComponent(entityInQueryIndex, entity, new FarmerBehaviorData() { Value = FarmerBehavior.SmashRock });
                     }
                     else if (rand == 1)
                     {
-                        ecb.SetComponent(entityInQueryIndex, entity, new FarmerBehaviorData() { Value = FarmerBehavior.TillGround });
+                        UnityEngine.Debug.Log("Is now Tilling");
+                        //ecb.SetComponent(entityInQueryIndex, entity, new FarmerBehaviorData() { Value = FarmerBehavior.TillGround });
                     }
                     else if (rand == 2)
                     {
+                        UnityEngine.Debug.Log("Is now Planting");
                         ecb.SetComponent(entityInQueryIndex, entity, new FarmerBehaviorData() { Value = FarmerBehavior.PlantSeed });
                     }
                     else if (rand == 3)
                     {
+                        UnityEngine.Debug.Log("Is now Selling");
                         ecb.SetComponent(entityInQueryIndex, entity, new FarmerBehaviorData() { Value = FarmerBehavior.SellPlant });
                     }
                 }

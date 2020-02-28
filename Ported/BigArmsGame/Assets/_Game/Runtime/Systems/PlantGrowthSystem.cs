@@ -1,4 +1,5 @@
 ﻿using Unity.Entities;
+using Unity.Transforms;
 using Unity.Jobs;
 
 public class PlantGrowthSystem : JobComponentSystem
@@ -17,14 +18,13 @@ public class PlantGrowthSystem : JobComponentSystem
         var ecb = m_EndSimulationECBSystem.CreateCommandBuffer().ToConcurrent();
 
         var jh = Entities.WithAll<IsGrowingTag>()
-            .ForEach((Entity entity, int entityInQueryIndex, ref PlantDataComp data, in LogicalPosition logicalPosition) =>
+            .ForEach((Entity entity, int entityInQueryIndex, ref PlantDataComp data, ref Scale scale, in LogicalPosition logicalPosition) =>
         {
             data.Growth += dt;
 
-            // TODO - Base the scale of the plant based on the Growth/GrowDuration ratio
-            //float scale = data.Growth / (float)data.GrowDuration;
+            scale.Value = data.Growth / (float)data.GrowDuration;
 
-            if(data.Growth >= data.GrowDuration)
+            if (data.Growth >= data.GrowDuration)
             {
                 data.Growth = data.GrowDuration;
                 ecb.RemoveComponent<IsGrowingTag>(entityInQueryIndex, entity);
