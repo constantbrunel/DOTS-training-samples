@@ -5,24 +5,13 @@ using Unity.Jobs;
 [UpdateInGroup(typeof(SimulationSystemGroup))]
 public class BehaviorSelectorSystem : JobComponentSystem
 {
-    private EntityCommandBufferSystem m_EndSimulationSystemGroupCommandBuffer;
-
-    protected override void OnCreate()
-    {
-        base.OnCreate();
-
-        m_EndSimulationSystemGroupCommandBuffer = World.GetExistingSystem<EndInitializationEntityCommandBufferSystem>();
-    }
-
     protected override JobHandle OnUpdate(JobHandle inputDeps)
     {
-        var commandBuffer = m_EndSimulationSystemGroupCommandBuffer.CreateCommandBuffer().ToConcurrent();
-
-        var random = new Unity.Mathematics.Random((uint)UnityEngine.Random.Range(0, 9999));
+        var random = new Unity.Mathematics.Random((uint)UnityEngine.Random.Range(1, 9999));
 
         var jobHandle = Entities
             .WithAll<FarmerTag>()
-            .ForEach((Entity entity, int entityInQueryIndex, ref FarmerBehaviorData behavior, ref DynamicBuffer<PathData> pathBuffer, ref TargetEntityData target) =>
+            .ForEach((Entity entity, int entityInQueryIndex, ref FarmerBehaviorData behavior, ref DynamicBuffer<PathData> pathBuffer) =>
             {
                 if(behavior.Value == FarmerBehavior.None)
                 {
@@ -36,7 +25,6 @@ public class BehaviorSelectorSystem : JobComponentSystem
                         {
                             case 0:
                                 behavior.Value = FarmerBehavior.TillGround;
-                                commandBuffer.DestroyEntity(entityInQueryIndex, entity);
                                 break;
 
                             case 1:
@@ -61,11 +49,8 @@ public class BehaviorSelectorSystem : JobComponentSystem
                     }
 
                     behavior.HeldPlant = Entity.Null;
-                    target.Value = Entity.Null;
                 }
             }).Schedule(inputDeps);
-
-        m_EndSimulationSystemGroupCommandBuffer.AddJobHandleForProducer(jobHandle);
 
         return jobHandle;
     }
