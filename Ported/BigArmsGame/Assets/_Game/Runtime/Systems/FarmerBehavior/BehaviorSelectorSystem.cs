@@ -15,6 +15,7 @@ public class BehaviorSelectorSystem : JobComponentSystem
                 {
                     // Clear path before selecting a behavior
                     pathBuffer.Clear();
+
                     if (behavior.BehaviourType == BehaviourType.Farmer)
                     {
                         var rand = random.NextInt(0, 5);
@@ -29,10 +30,9 @@ public class BehaviorSelectorSystem : JobComponentSystem
                             case 2:
                                 behavior.Value = FarmerBehavior.SellPlant;
                                 break;
+                            default:
                             case 3:
                                 behavior.Value = FarmerBehavior.SmashRock;
-                                break;
-                            default:
                                 break;
                         }
                     }
