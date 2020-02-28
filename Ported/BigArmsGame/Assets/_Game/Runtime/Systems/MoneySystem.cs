@@ -50,7 +50,9 @@ public class MoneySystem : JobComponentSystem
         SetSingleton(bank);
 
         // TODO - Add a nice animation to fadeout plant sold
-        EntityManager.DestroyEntity(m_IsSoldQuery);
+        var entitiesToDestroy = m_IsSoldQuery.ToEntityArray(Unity.Collections.Allocator.TempJob);
+        EntityManager.DestroyEntity(entitiesToDestroy);
+        entitiesToDestroy.Dispose();
 
         return default;
     }

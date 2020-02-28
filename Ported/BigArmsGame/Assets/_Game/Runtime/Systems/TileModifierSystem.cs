@@ -67,6 +67,13 @@ public class TileModifierSystem : JobComponentSystem
                         tiles[Pathing.Hash(mapSize.x, modifierData.PosX, modifierData.PosY)] = new TileDescriptor() { TileType = modifierData.NextType, Entity = Entity.Null };
                         break;
                     }
+                case TileTypes.Tilled:
+                    {
+                        Entity plantEntity = EntityManager.Instantiate(farmData.PlantEntity1);
+                        EntityManager.SetComponentData(plantEntity, new Translation() { Value = new float3(modifierData.PosX, 0f, modifierData.PosY) });
+                        tiles[Pathing.Hash(mapSize.x, modifierData.PosX, modifierData.PosY)] = new TileDescriptor() { TileType = modifierData.NextType, Entity = plantEntity };
+                        break;
+                    }
             }
         }).WithStructuralChanges().WithoutBurst().Run();
 

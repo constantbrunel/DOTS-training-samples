@@ -80,6 +80,51 @@ public class FarmGeneratorSystem : JobComponentSystem
             }
         }
 
+        // Create Tilled tiles
+        int tilledTiles = 0;
+        while(tilledTiles <= farm.InitialTilledTileCount)
+        {
+            int maxXSize = 8;
+            int maxYSize = 8;
+            int sizeX = UnityEngine.Random.Range(1, maxXSize);
+            int sizeY = UnityEngine.Random.Range(1, maxYSize);
+            int posX = UnityEngine.Random.Range(0, mapX - sizeX);
+            int posY = UnityEngine.Random.Range(0, mapX - sizeY);
+
+            bool blocked = false;
+            for (int x = posX; x <= posX + sizeX; x++)
+            {
+                for (int y = posY; y <= posY + sizeY; y++)
+                {
+                    if (tiles[x + (mapX * y)].TileType == TileTypes.Store)
+                    {
+                        blocked = true;
+                        break;
+                    }
+                }
+                if (blocked) break;
+            }
+            if (blocked)
+            {
+                continue;
+            }
+
+            for (int x = posX; x < posX + sizeX; ++x)
+            {
+                for(int y = posY; y < posY + sizeY; ++y)
+                {
+                    Entity tilledTile = EntityManager.Instantiate(farm.TiledTileEntity);
+                    EntityManager.SetComponentData(tilledTile, new Translation() { Value = new float3(x, 0.001f, y) });
+                    tiles[x + y * mapX] = new TileDescriptor()
+                    {
+                        TileType = TileTypes.Tilled,
+                        Entity = Entity.Null
+                    };
+                    tilledTiles++;
+                }
+            }
+        }
+
         // Create rocks
         int rockSpawnAttempts = farm.RockSpawnAttempts;
         for (int i = 0; i < rockSpawnAttempts; i++)
@@ -94,7 +139,9 @@ public class FarmGeneratorSystem : JobComponentSystem
             {
                 for (int y = rockY; y <= rockY + height; y++)
                 {
-                    if (tiles[x + (mapX * y)].TileType == TileTypes.Rock || tiles[x + (mapX * y)].TileType == TileTypes.Store)
+                    if (tiles[x + (mapX * y)].TileType == TileTypes.Rock
+                        || tiles[x + (mapX * y)].TileType == TileTypes.Store
+                        || tiles[x + (mapX * y)].TileType == TileTypes.Tilled)
                     {
                         blocked = true;
                         break;
