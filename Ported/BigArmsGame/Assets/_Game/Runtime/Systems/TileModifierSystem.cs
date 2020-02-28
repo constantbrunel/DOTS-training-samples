@@ -69,7 +69,7 @@ public class TileModifierSystem : JobComponentSystem
                     }
                 case TileTypes.Tilled:
                     {
-                        Entity plantEntity = EntityManager.Instantiate(farmData.DroneEntity);
+                        Entity plantEntity = EntityManager.Instantiate(farmData.PlantEntity1);
                         EntityManager.SetComponentData(plantEntity, new Translation() { Value = new float3(modifierData.PosX, 0f, modifierData.PosY) });
                         tiles[Pathing.Hash(mapSize.x, modifierData.PosX, modifierData.PosY)] = new TileDescriptor() { TileType = modifierData.NextType, Entity = plantEntity };
                         break;
