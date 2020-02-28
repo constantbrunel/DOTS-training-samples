@@ -18,6 +18,7 @@ public class Farm : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReference
     public GameObject RockGameObject;
     public GameObject PlantGameObject1;
     public GameObject PlantGameObject2;
+    public GameObject PlantGameObject3;
     public GameObject FarmerGameObject;
     public GameObject DroneGameObject;
 
@@ -36,6 +37,7 @@ public class Farm : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReference
             RockEntity = conversionSystem.GetPrimaryEntity(RockGameObject),
             PlantEntity1 = conversionSystem.GetPrimaryEntity(PlantGameObject1),
             PlantEntity2 = conversionSystem.GetPrimaryEntity(PlantGameObject2),
+            PlantEntity3 = conversionSystem.GetPrimaryEntity(PlantGameObject3),
             FarmerEntity = conversionSystem.GetPrimaryEntity(FarmerGameObject),
             DroneEntity = conversionSystem.GetPrimaryEntity(DroneGameObject)
         });
@@ -50,6 +52,7 @@ public class Farm : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReference
         referencedPrefabs.Add(RockGameObject);
         referencedPrefabs.Add(PlantGameObject1);
         referencedPrefabs.Add(PlantGameObject2);
+        referencedPrefabs.Add(PlantGameObject3);
         referencedPrefabs.Add(FarmerGameObject);
         referencedPrefabs.Add(DroneGameObject);
     }
@@ -69,6 +72,7 @@ public struct FarmData : IComponentData
     public Entity RockEntity;
     public Entity PlantEntity1;
     public Entity PlantEntity2;
+    public Entity PlantEntity3;
     public Entity FarmerEntity;
     public Entity DroneEntity;
 }

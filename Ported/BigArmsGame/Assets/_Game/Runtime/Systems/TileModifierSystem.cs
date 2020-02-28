@@ -72,13 +72,18 @@ public class TileModifierSystem : JobComponentSystem
                     {
                         Entity plantEntity;
 
-                        if(random.NextInt(0,2) == 0)
+                        var rand = random.NextInt(0, 3);
+                        if (rand == 0)
                         {
                             plantEntity = EntityManager.Instantiate(farmData.PlantEntity1);
                         }
-                        else
+                        else if(rand == 1)
                         {
                             plantEntity = EntityManager.Instantiate(farmData.PlantEntity2);
+                        }
+                        else
+                        {
+                            plantEntity = EntityManager.Instantiate(farmData.PlantEntity3);
                         }
                         EntityManager.SetComponentData(plantEntity, new Translation() { Value = new float3(modifierData.PosX, 0f, modifierData.PosY) });
                         tiles[Pathing.Hash(mapSize.x, modifierData.PosX, modifierData.PosY)] = new TileDescriptor() { TileType = modifierData.NextType, Entity = plantEntity };
