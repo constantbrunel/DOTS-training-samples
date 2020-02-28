@@ -25,8 +25,7 @@ public class TillGroundBehaviorSystem : JobComponentSystem
         var map = GetSingleton<FarmData>();
 
         var tillData = GetComponentDataFromEntity<TillTargetData>(true);
-
-        var random = new Unity.Mathematics.Random((uint)UnityEngine.Time.realtimeSinceStartup);
+        var random = new Unity.Mathematics.Random((uint)UnityEngine.Random.Range(0,120000000000));
 
         var jobDeps = Entities
             .WithReadOnly(tillData)
@@ -79,11 +78,14 @@ public class TillGroundBehaviorSystem : JobComponentSystem
                         var target = commandBuffer.CreateEntity(entityInQueryIndex);
                         commandBuffer.AddComponent(entityInQueryIndex, target, new TillTargetData() { PosX = minX, PosY = minY, SizeX = width, SizeY = height });
                         commandBuffer.SetComponent(entityInQueryIndex, entity, new TargetEntityData() { Value = target });
+                        Debug.Log($"Target aquired - PosX = {minX}, PosY = {minY}, SizeX = {width}, SizeY = {height}");
                     }
                     else
                     {
+                        Debug.Log("No target aquired");
                         if (random.NextFloat(1) < .2f)
                         {
+                            Debug.Log("Quiting");
                             behavior.Value = FarmerBehavior.None;
                         }
                     }
@@ -91,8 +93,9 @@ public class TillGroundBehaviorSystem : JobComponentSystem
                 else
                 {
                     var data = tillData[targetEntityData.Value];
-                    if (Pathing.IsTillableInZone(tiles, map.MapSize.x, map.MapSize.y, logicalPosition.PositionX, logicalPosition.PositionY, new RectInt(data.PosX, data.PosX, data.SizeX, data.SizeY)))
+                    if (Pathing.IsTillableInZone(tiles, map.MapSize.x, map.MapSize.y, logicalPosition.PositionX, logicalPosition.PositionY, new RectInt(data.PosX, data.PosY, data.SizeX, data.SizeY))) 
                     {
+                        Debug.Log("Tile");
                         pathData.Clear();
                         var entModifier = commandBuffer.CreateEntity(entityInQueryIndex);
                         commandBuffer.AddComponent(entityInQueryIndex, entModifier, new TileModifierData() { PosX = logicalPosition.PositionX, PosY = logicalPosition.PositionY, NextType = TileTypes.Tilled });
@@ -101,11 +104,12 @@ public class TillGroundBehaviorSystem : JobComponentSystem
                     {
                         if (pathData.Length == 0)
                         {
+                            Debug.Log("Looking for a path");
                             var outputPath = new NativeList<int>(Allocator.Temp);
-                            bool groundFound = Pathing.FindNearbyGroundInZone(tiles, map.MapSize.x, map.MapSize.y, logicalPosition.PositionX, logicalPosition.PositionY, 25, new RectInt(data.PosX, data.PosY, data.SizeX, data.SizeY), ref outputPath);
-                            if (!groundFound)
+                            Pathing.FindNearbyGroundInZone(tiles, map.MapSize.x, map.MapSize.y, logicalPosition.PositionX, logicalPosition.PositionY, 25, new RectInt(data.PosX, data.PosY, data.SizeX, data.SizeY), ref outputPath);
+                            if (outputPath.Length == 0)
                             {
-                                commandBuffer.DestroyEntity(entityInQueryIndex, targetEntityData.Value);
+                                Debug.Log("No path found quiting");
                                 behavior.Value = FarmerBehavior.None;
                             }
                             else
@@ -115,11 +119,15 @@ public class TillGroundBehaviorSystem : JobComponentSystem
                                 for (int i = 0; i < outputPath.Length; ++i)
                                 {
                                     Pathing.Unhash(map.MapSize.x, map.MapSize.y, outputPath[i], out int x, out int y);
+                                    Debug.Log($"New path spot {x}/{y}");
                                     buffer.Add(new PathData()
                                     {
                                         Position = new int2(x, y)
                                     });
                                 }
+
+                                outputPath.Dispose();
+                                return;
                             }
                             outputPath.Dispose();
                         }
@@ -127,16 +135,18 @@ public class TillGroundBehaviorSystem : JobComponentSystem
 
                     if (pathData.Length == 0)
                     {
+                        Debug.Log("Action done");
                         if (random.NextFloat(1) < .1f)
                         {
-                            commandBuffer.DestroyEntity(entityInQueryIndex, targetEntityData.Value);
+                            Debug.Log("Quiting action");
                             behavior.Value = FarmerBehavior.None;
                         }
                         else
                         {
+                            Debug.Log("Finding new temporary path");
                             var outputPath = new NativeList<int>(Allocator.Temp);
-                            bool groundFound = Pathing.FindNearbyGound(tiles, map.MapSize.x, map.MapSize.y, logicalPosition.PositionX, logicalPosition.PositionY, 25, ref outputPath);
-                            if (!groundFound)
+                            Pathing.FindNearbyTilled(tiles, map.MapSize.x, map.MapSize.y, logicalPosition.PositionX, logicalPosition.PositionY, 25, ref outputPath);
+                            if (outputPath.Length == 0)
                             {
                                 behavior.Value = FarmerBehavior.None;
                             }

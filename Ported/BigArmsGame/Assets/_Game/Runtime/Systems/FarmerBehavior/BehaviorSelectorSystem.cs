@@ -21,7 +21,7 @@ public class BehaviorSelectorSystem : JobComponentSystem
 
         var jobHandle = Entities
             .WithAll<FarmerTag>()
-            .ForEach((Entity entity, int entityInQueryIndex, ref FarmerBehaviorData behavior, ref DynamicBuffer<PathData> pathBuffer) =>
+            .ForEach((Entity entity, int entityInQueryIndex, ref FarmerBehaviorData behavior, ref DynamicBuffer<PathData> pathBuffer, ref TargetEntityData target) =>
             {
                 if(behavior.Value == FarmerBehavior.None)
                 {
@@ -29,13 +29,18 @@ public class BehaviorSelectorSystem : JobComponentSystem
                     pathBuffer.Clear();
 
                     // Select a behavior
-                    int rand = 2;// random.NextInt(0, 4);
+                    int rand = 1;// random.NextInt(0, 4);
                     if (rand == 0)
                     {
                         ecb.SetComponent(entityInQueryIndex, entity, new FarmerBehaviorData() { Value = FarmerBehavior.SmashRock });
                     }
                     else if (rand == 1)
                     {
+                        if(target.Value != Entity.Null)
+                        {
+                            ecb.DestroyEntity(entityInQueryIndex, target.Value);
+                            target.Value = Entity.Null;
+                        }
                         ecb.SetComponent(entityInQueryIndex, entity, new FarmerBehaviorData() { Value = FarmerBehavior.TillGround });
                     }
                     else if (rand == 2)
