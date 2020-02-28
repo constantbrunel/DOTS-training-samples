@@ -202,6 +202,7 @@ public class FarmGeneratorSystem : JobComponentSystem
             {
                 Value = new float3(x, 0, y)
             });
+            EntityManager.SetComponentData(farmerEntity, new LogicalPosition { PositionX = x, PositionY = y });
 
             spawnedFarmer++;
         }

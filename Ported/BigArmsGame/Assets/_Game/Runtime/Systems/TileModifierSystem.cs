@@ -65,6 +65,11 @@ public class TileModifierSystem : JobComponentSystem
                     }
                 case TileTypes.Harvestable:
                     {
+                        tiles[Pathing.Hash(mapSize.x, modifierData.PosX, modifierData.PosY)] = new TileDescriptor() { TileType = modifierData.NextType, Entity = tile.Entity };
+                        break;
+                    }
+                case TileTypes.Reserved:
+                    {
                         tiles[Pathing.Hash(mapSize.x, modifierData.PosX, modifierData.PosY)] = new TileDescriptor() { TileType = modifierData.NextType, Entity = Entity.Null };
                         break;
                     }

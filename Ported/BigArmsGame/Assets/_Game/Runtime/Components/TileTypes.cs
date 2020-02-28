@@ -8,6 +8,7 @@ public enum TileTypes
     Store,
     Planted,
     Harvestable,
+    Reserved,
 }
 
 public struct TileDescriptor
