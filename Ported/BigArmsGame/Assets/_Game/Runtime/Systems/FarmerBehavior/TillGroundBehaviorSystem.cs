@@ -25,7 +25,7 @@ public class TillGroundBehaviorSystem : JobComponentSystem
         var map = GetSingleton<FarmData>();
 
         var tillData = GetComponentDataFromEntity<TillTargetData>(true);
-        var random = new Unity.Mathematics.Random((uint)UnityEngine.Random.Range(0,120000000000));
+        var random = new Unity.Mathematics.Random((uint)UnityEngine.Random.Range(1,120000000000));
 
         var jobDeps = Entities
             .WithReadOnly(tillData)
@@ -160,6 +160,13 @@ public class TillGroundBehaviorSystem : JobComponentSystem
                             }
                         }
                         outputPath.Dispose();
+                    }
+                    else if(pathData.Length == 0)
+                    {
+                        commandBuffer.DestroyEntity(entityInQueryIndex, targetEntityData.Value);
+                        targetEntityData.Value = Entity.Null;
+                        Debug.Log("Pathing fucked. Quiting");
+                        behavior.Value = FarmerBehavior.None;
                     }
                 }
             }
