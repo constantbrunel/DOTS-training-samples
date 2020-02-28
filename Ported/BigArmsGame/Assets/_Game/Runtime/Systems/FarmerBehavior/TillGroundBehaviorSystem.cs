@@ -124,6 +124,7 @@ public class TillGroundBehaviorSystem : JobComponentSystem
                         targetEntityData.Value = Entity.Null;
                         //Debug.Log("Target not valid anymore. Quiting");
                         behavior.Value = FarmerBehavior.None;
+                        return;
                     }
 
                     var data = tillData[targetEntityData.Value];
