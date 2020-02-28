@@ -35,14 +35,14 @@ public class MoneySystem : JobComponentSystem
             if (bank.FarmerBank >= bank.FarmerCost)
             {
                 Spawn(EntityManager, farm.FarmerEntity, data.StoreX, data.StoreY);
-                UnityEngine.Debug.Log("Farmer Spawned");
+                //UnityEngine.Debug.Log("Farmer Spawned");
                 bank.FarmerBank -= bank.FarmerCost;
             }
 
             if (bank.DroneBank >= bank.DroneCost)
             {
                 Spawn(EntityManager, farm.DroneEntity, data.StoreX, data.StoreY);
-                UnityEngine.Debug.Log("Drone Spawned");
+                //UnityEngine.Debug.Log("Drone Spawned");
                 bank.DroneBank -= bank.DroneCost;
             }
         }).WithStructuralChanges().Run();

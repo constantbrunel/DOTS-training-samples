@@ -45,7 +45,7 @@ public class TillGroundBehaviorSystem : JobComponentSystem
                 {
                     // First clear path
                     pathData.Clear();
-                    UnityEngine.Debug.Log("Looking for a new zone to tile");
+                    //UnityEngine.Debug.Log("Looking for a new zone to tile");
 
                     int width = random.NextInt(1, 8);
                     int height = random.NextInt(1, 8);
@@ -76,15 +76,15 @@ public class TillGroundBehaviorSystem : JobComponentSystem
                     if (blocked == false)
                     {
                         // Get new path
-                        Debug.Log("Looking for a path");
+                        //Debug.Log("Looking for a path");
                         var outputPath = new NativeList<int>(Allocator.Temp);
                         Pathing.FindNearbyGroundInZone(tiles, map.MapSize.x, map.MapSize.y, logicalPosition.PositionX, logicalPosition.PositionY, 25, new RectInt(minX, minY, width, height), ref outputPath);
                         if (outputPath.Length == 0)
                         {
-                            Debug.Log("No target aquired");
+                            //Debug.Log("No target aquired");
                             if (random.NextFloat(1) < .2f)
                             {
-                                Debug.Log("Quiting");
+                                //Debug.Log("Quiting");
                                 behavior.Value = FarmerBehavior.None;
                             }
                         }
@@ -103,16 +103,16 @@ public class TillGroundBehaviorSystem : JobComponentSystem
                             var target = commandBuffer.CreateEntity(entityInQueryIndex);
                             commandBuffer.AddComponent(entityInQueryIndex, target, new TillTargetData() { PosX = minX, PosY = minY, SizeX = width, SizeY = height });
                             commandBuffer.SetComponent(entityInQueryIndex, entity, new TargetEntityData() { Value = target });
-                            Debug.Log($"Target aquired - PosX = {minX}, PosY = {minY}, SizeX = {width}, SizeY = {height}");
+                            //Debug.Log($"Target aquired - PosX = {minX}, PosY = {minY}, SizeX = {width}, SizeY = {height}");
                         }
                         outputPath.Dispose();
                     }
                     else
                     {
-                        Debug.Log("No target aquired");
+                        //Debug.Log("No target aquired");
                         if (random.NextFloat(1) < .2f)
                         {
-                            Debug.Log("Quiting");
+                            //Debug.Log("Quiting");
                             behavior.Value = FarmerBehavior.None;
                         }
                     }
@@ -122,7 +122,7 @@ public class TillGroundBehaviorSystem : JobComponentSystem
                     if(!tillData.Exists(targetEntityData.Value))
                     {
                         targetEntityData.Value = Entity.Null;
-                        Debug.Log("Target not valid anymore. Quiting");
+                        //Debug.Log("Target not valid anymore. Quiting");
                         behavior.Value = FarmerBehavior.None;
                     }
 
@@ -137,17 +137,20 @@ public class TillGroundBehaviorSystem : JobComponentSystem
                         var outputPath = new NativeList<int>(Allocator.Temp);
                         Pathing.FindNearbyGroundInZone(tiles, map.MapSize.x, map.MapSize.y, logicalPosition.PositionX, logicalPosition.PositionY, 999, new RectInt(data.PosX, data.PosY, data.SizeX, data.SizeY), ref outputPath);
 
-                        Debug.Log($"Tile ({logicalPosition.PositionX},{logicalPosition.PositionY})"); 
+                        //Debug.Log($"Tile ({logicalPosition.PositionX},{logicalPosition.PositionY})"); 
 
 
                         if (outputPath.Length == 0)
                         {
-                            Debug.Log("Action done");
-                            commandBuffer.DestroyEntity(entityInQueryIndex, targetEntityData.Value);
+                            //Debug.Log("Action done");
+                            if(tillData.Exists(targetEntityData.Value))
+                            {
+                                commandBuffer.DestroyEntity(entityInQueryIndex, targetEntityData.Value);
+                            }
                             targetEntityData.Value = Entity.Null;
                             if (random.NextFloat(1) < .1f)
                             {
-                                Debug.Log("Quiting action");
+                                //Debug.Log("Quiting action");
                                 behavior.Value = FarmerBehavior.None;
                             }
                         }
@@ -155,7 +158,7 @@ public class TillGroundBehaviorSystem : JobComponentSystem
                         {
 
                             Pathing.Unhash(map.MapSize.x, map.MapSize.y, outputPath[0], out var xa, out var ya);
-                            Debug.Log($" Actual position ({logicalPosition.PositionX},{logicalPosition.PositionY}) -> New Tile to till ({xa},{ya})");
+                            //Debug.Log($" Actual position ({logicalPosition.PositionX},{logicalPosition.PositionY}) -> New Tile to till ({xa},{ya})");
 
                             for (int i = 0; i < outputPath.Length; ++i)
                             {
@@ -170,9 +173,12 @@ public class TillGroundBehaviorSystem : JobComponentSystem
                     }
                     else if(pathData.Length == 0)
                     {
-                        commandBuffer.DestroyEntity(entityInQueryIndex, targetEntityData.Value);
+                        if (tillData.Exists(targetEntityData.Value))
+                        {
+                            commandBuffer.DestroyEntity(entityInQueryIndex, targetEntityData.Value);
+                        }
                         targetEntityData.Value = Entity.Null;
-                        Debug.Log("Pathing fucked. Quiting");
+                        //Debug.Log("Pathing fucked. Quiting");
                         behavior.Value = FarmerBehavior.None;
                     }
                 }
