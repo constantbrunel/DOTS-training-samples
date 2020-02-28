@@ -64,5 +64,10 @@ public class MoneySystem : JobComponentSystem
         {
             Value = new float3(posX, 0, posY)
         });
+        EntityManager.SetComponentData(farmerEntity, new LogicalPosition()
+        {
+            PositionX = posX,
+            PositionY = posY
+        });
     }
 }
