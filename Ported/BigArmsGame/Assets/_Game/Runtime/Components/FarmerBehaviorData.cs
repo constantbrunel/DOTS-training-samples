@@ -6,11 +6,18 @@ public enum FarmerBehavior
     SmashRock,
     TillGround,
     PlantSeed,
-    SellPlant,
+    SellPlant
+}
+
+public enum BehaviourType
+{
+    Farmer,
+    Drone
 }
 
 public struct FarmerBehaviorData : IComponentData
 {
+    public BehaviourType BehaviourType;
     public FarmerBehavior Value;
     public Entity HeldPlant;
     public bool HasBoughtSeeds;

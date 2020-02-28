@@ -1,23 +1,14 @@
-﻿using Unity.Entities;
+﻿using Unity.Collections;
+using Unity.Entities;
 using Unity.Jobs;
+using UnityEngine;
 
 [UpdateInGroup(typeof(SimulationSystemGroup))]
 public class BehaviorSelectorSystem : JobComponentSystem
 {
-    private EntityCommandBufferSystem m_EndSimulationSystemGroupCommandBuffer;
-
-    protected override void OnCreate()
-    {
-        base.OnCreate();
-
-        m_EndSimulationSystemGroupCommandBuffer = World.GetExistingSystem<EndInitializationEntityCommandBufferSystem>();
-    }
-
     protected override JobHandle OnUpdate(JobHandle inputDeps)
     {
-        var ecb = m_EndSimulationSystemGroupCommandBuffer.CreateCommandBuffer().ToConcurrent();
-
-        var random = new Unity.Mathematics.Random((uint)UnityEngine.Time.realtimeSinceStartup);
+        var random = new Unity.Mathematics.Random((uint)Random.Range(0, 999999));
 
         var jobHandle = Entities
             .WithAll<FarmerTag>()
@@ -28,28 +19,34 @@ public class BehaviorSelectorSystem : JobComponentSystem
                     // Clear path before selecting a behavior
                     pathBuffer.Clear();
 
-                    // Select a behavior
-                    int rand = 1;// random.NextInt(0, 4);
-                    if (rand == 0)
+                    if(behavior.BehaviourType == BehaviourType.Farmer)
                     {
-                        ecb.SetComponent(entityInQueryIndex, entity, new FarmerBehaviorData() { Value = FarmerBehavior.SmashRock });
+                        var rand = random.NextInt(0, 4);
+                        switch(rand)
+                        {
+                            case 0:
+                                behavior.Value = FarmerBehavior.TillGround;
+                                break;
+
+                            case 1:
+                                behavior.Value = FarmerBehavior.PlantSeed;
+                                break;
+
+                            case 2:
+                                behavior.Value = FarmerBehavior.SellPlant;
+                                break;
+
+                            case 3:
+                                behavior.Value = FarmerBehavior.SmashRock;
+                                break;
+                        }
                     }
-                    else if (rand == 1)
+                    else
                     {
-                        ecb.SetComponent(entityInQueryIndex, entity, new FarmerBehaviorData() { Value = FarmerBehavior.TillGround });
-                    }
-                    else if (rand == 2)
-                    {
-                        ecb.SetComponent(entityInQueryIndex, entity, new FarmerBehaviorData() { Value = FarmerBehavior.PlantSeed });
-                    }
-                    else if (rand == 3)
-                    {
-                        ecb.SetComponent(entityInQueryIndex, entity, new FarmerBehaviorData() { Value = FarmerBehavior.SellPlant });
+                        behavior.Value = FarmerBehavior.SellPlant;
                     }
                 }
             }).Schedule(inputDeps);
-
-        m_EndSimulationSystemGroupCommandBuffer.AddJobHandleForProducer(jobHandle);
 
         return jobHandle;
     }
