@@ -62,11 +62,6 @@ public class TillGroundBehaviorSystem : JobComponentSystem
                                 blocked = true;
                                 break;
                             }
-                            if (Pathing.IsRock(tiles, map.MapSize.x, x, y) || Pathing.IsStore(tiles, map.MapSize.x, x, y))
-                            {
-                                blocked = true;
-                                break;
-                            }
                         }
                         if (blocked)
                         {
@@ -114,20 +109,15 @@ public class TillGroundBehaviorSystem : JobComponentSystem
                             }
                             else
                             {
-                                var buffer = commandBuffer.SetBuffer<PathData>(entityInQueryIndex, entity);
-
                                 for (int i = 0; i < outputPath.Length; ++i)
                                 {
                                     Pathing.Unhash(map.MapSize.x, map.MapSize.y, outputPath[i], out int x, out int y);
                                     Debug.Log($"New path spot {x}/{y}");
-                                    buffer.Add(new PathData()
+                                    pathData.Add(new PathData()
                                     {
                                         Position = new int2(x, y)
                                     });
                                 }
-
-                                outputPath.Dispose();
-                                return;
                             }
                             outputPath.Dispose();
                         }
