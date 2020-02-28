@@ -34,7 +34,7 @@ public class SmashRockBehaviorSystem : JobComponentSystem
                 {
                     var outputPath = new NativeList<int>(Allocator.Temp);
                     targetEntityData.Value = Pathing.FindNearbyRock(tiles, mapSize.x, mapSize.y, logicalPosition.PositionX, logicalPosition.PositionY, 20, ref outputPath);
-                    if (targetEntityData.Value == null)
+                    if (targetEntityData.Value == Entity.Null)
                     {
                         behavior.Value = FarmerBehavior.None;
                     }
