@@ -17,7 +17,7 @@ public class PlantGrowthSystem : JobComponentSystem
         var ecb = m_EndSimulationECBSystem.CreateCommandBuffer().ToConcurrent();
 
         var jh = Entities.WithAll<IsGrowingTag>()
-            .ForEach((Entity entity, int entityInQueryIndex, ref PlantDataComp data) =>
+            .ForEach((Entity entity, int entityInQueryIndex, ref PlantDataComp data, in LogicalPosition logicalPosition) =>
         {
             data.Growth += dt;
 
@@ -31,7 +31,7 @@ public class PlantGrowthSystem : JobComponentSystem
                 ecb.AddComponent<IsHarvestableTag>(entityInQueryIndex, entity);
 
                 var tileModifierEntity = ecb.CreateEntity(entityInQueryIndex);
-                ecb.AddComponent(entityInQueryIndex, tileModifierEntity, new TileModifierData { NextType = TileTypes.Harvestable, PosX = data.PositionX, PosY = data.PositionY });
+                ecb.AddComponent(entityInQueryIndex, tileModifierEntity, new TileModifierData { NextType = TileTypes.Harvestable, PosX = logicalPosition.PositionX, PosY = logicalPosition.PositionY });
             }
         }).Schedule(inputDeps);
 
