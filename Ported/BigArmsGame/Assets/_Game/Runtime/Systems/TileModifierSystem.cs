@@ -77,7 +77,7 @@ public class TileModifierSystem : JobComponentSystem
                     {
                         Entity plantEntity;
 
-                        var rand = random.NextInt(0, 3);
+                        var rand = UnityEngine.Random.Range(0, 4);
                         if (rand == 0)
                         {
                             plantEntity = EntityManager.Instantiate(farmData.PlantEntity1);

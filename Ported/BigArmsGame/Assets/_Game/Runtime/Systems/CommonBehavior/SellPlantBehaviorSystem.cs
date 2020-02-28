@@ -62,6 +62,10 @@ public class SellPlantBehaviorSystem : JobComponentSystem
                     ecb.AddComponent(entityInQueryIndex, reservationEntity, new ReservationData { FarmerEntity = entity, PlantEntity = result });
 
                 }
+                else
+                {
+                    behaviorData.Value = FarmerBehavior.None;
+                }
                 outputPath.Dispose();
                 return;
             }
@@ -91,6 +95,12 @@ public class SellPlantBehaviorSystem : JobComponentSystem
 
             if (behaviorData.HeldPlant != Entity.Null)
             {
+                if (!allPlants.Exists(behaviorData.HeldPlant))
+                {
+                    behaviorData.HeldPlant = Entity.Null;
+                    target.Value = Entity.Null;
+                    return;
+                }
                 ecb.SetComponent(entityInQueryIndex, behaviorData.HeldPlant, new Translation { Value = new float3(farmerPos.Value.x, 2f, farmerPos.Value.z) });
             }
 
