@@ -119,6 +119,13 @@ public class TillGroundBehaviorSystem : JobComponentSystem
                 }
                 else
                 {
+                    if(!tillData.Exists(targetEntityData.Value))
+                    {
+                        targetEntityData.Value = Entity.Null;
+                        Debug.Log("Target not valid anymore. Quiting");
+                        behavior.Value = FarmerBehavior.None;
+                    }
+
                     var data = tillData[targetEntityData.Value];
                     if (Pathing.IsTillableInZone(tiles, map.MapSize.x, map.MapSize.y, logicalPosition.PositionX, logicalPosition.PositionY, new RectInt(data.PosX, data.PosY, data.SizeX, data.SizeY)))
                     {
