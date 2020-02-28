@@ -40,24 +40,23 @@ public class SellPlantBehaviorSystem : JobComponentSystem
             if(target.Value == Entity.Null && behaviorData.HeldPlant == Entity.Null)
             {
                 // Find near harvestable to continue
-                NativeList<int> outputPath = new NativeList<int>(Allocator.TempJob);
+                NativeList<int> outputPath = new NativeList<int>(Allocator.Temp);
                 var result = Pathing.FindNearbyHarvestable(array, mapSize.x, mapSize.y, pos.PositionX, pos.PositionY, 20, ref outputPath);
 
                 if (result != Entity.Null && !allReservedPlants.Exists(result))
                 {
-                    DynamicBuffer<PathData> path = new DynamicBuffer<PathData>();
                     for (int i = 0; i < outputPath.Length; ++i)
                     {
                         Pathing.Unhash(mapSize.x, mapSize.y, outputPath[i], out int posX, out int posY);
-                        path.Add(new PathData { Position = new int2(posX, posY) });
+                        pathData.Add(new PathData { Position = new int2(posX, posY) });
                     }
                     target.Value = result;
-                    pathData = path;
                 }
                 else
                 {
                     behaviorData.Value = FarmerBehavior.None;
                 }
+                outputPath.Dispose();
                 return;
             }
 
@@ -73,19 +72,17 @@ public class SellPlantBehaviorSystem : JobComponentSystem
                     ecb.AddComponent(entityInQueryIndex, tileModifierEntity, new TileModifierData { NextType = TileTypes.Tilled, PosX = pos.PositionX, PosY = pos.PositionY });
 
                     // Find path to the store
-                    NativeList<int> outputPath = new NativeList<int>(Allocator.TempJob);
+                    NativeList<int> outputPath = new NativeList<int>(Allocator.Temp);
                     var result = Pathing.FindNearbyStore(array, mapSize.x, mapSize.y, pos.PositionX, pos.PositionY, 20, ref outputPath);
 
                     if (result != Entity.Null)
                     {
-                        DynamicBuffer<PathData> path = new DynamicBuffer<PathData>();
                         for (int i = 0; i < outputPath.Length; ++i)
                         {
                             Pathing.Unhash(mapSize.x, mapSize.y, outputPath[i], out int posX, out int posY);
-                            path.Add(new PathData { Position = new int2(posX, posY) });
+                            pathData.Add(new PathData { Position = new int2(posX, posY) });
                         }
                         target.Value = result;
-                        pathData = path;
                     }
 
                     outputPath.Dispose();
@@ -106,19 +103,17 @@ public class SellPlantBehaviorSystem : JobComponentSystem
                     else
                     {
                         // Find near harvestable to continue
-                        NativeList<int> outputPath = new NativeList<int>(Allocator.TempJob);
+                        NativeList<int> outputPath = new NativeList<int>(Allocator.Temp);
                         var result = Pathing.FindNearbyHarvestable(array, mapSize.x, mapSize.y, pos.PositionX, pos.PositionY, 20, ref outputPath);
 
                         if (result != Entity.Null)
                         {
-                            DynamicBuffer<PathData> path = new DynamicBuffer<PathData>();
                             for (int i = 0; i < outputPath.Length; ++i)
                             {
                                 Pathing.Unhash(mapSize.x, mapSize.y, outputPath[i], out int posX, out int posY);
-                                path.Add(new PathData { Position = new int2(posX, posY) });
+                                pathData.Add(new PathData { Position = new int2(posX, posY) });
                             }
                             target.Value = result;
-                            pathData = path;
                         }
                         else
                         {

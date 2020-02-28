@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7949360336315994841}
+  - component: {fileID: -7459249911076735619}
   m_Layer: 0
   m_Name: Plant
   m_TagString: Untagged
@@ -32,6 +33,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-7459249911076735619
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 835675283445779902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15e11065c922248fd9c62f89ea136457, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3524667774435554352
 GameObject:
   m_ObjectHideFlags: 0
@@ -43,7 +56,6 @@ GameObject:
   - component: {fileID: 3920372560131230990}
   - component: {fileID: 7552837768362210865}
   - component: {fileID: 917757863067049101}
-  - component: {fileID: 1824226362078501523}
   m_Layer: 0
   m_Name: Capsule
   m_TagString: Untagged
@@ -112,20 +124,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!136 &1824226362078501523
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3524667774435554352}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &7387786586593585797
 GameObject:
   m_ObjectHideFlags: 0
@@ -137,7 +135,6 @@ GameObject:
   - component: {fileID: 8201867172834375971}
   - component: {fileID: 5794260486218456060}
   - component: {fileID: 7459023588757358685}
-  - component: {fileID: 2962814290227238082}
   m_Layer: 0
   m_Name: Cylinder
   m_TagString: Untagged
@@ -206,17 +203,3 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!136 &2962814290227238082
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7387786586593585797}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.5000001
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
