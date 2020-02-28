@@ -60,7 +60,7 @@ public class SmashRockBehaviorSystem : JobComponentSystem
                     }
                     outputPath.Dispose();
                 }
-                else if (pathData.Length == 1)
+                else if (pathData.Length <= 1)
                 {
                     var damageEntity = commandBuffer.CreateEntity(entityInQueryIndex);
                     commandBuffer.AddComponent(entityInQueryIndex, damageEntity, new Damage()
